@@ -1,4 +1,4 @@
-# redux-symbiote [![Build Status](https://travis-ci.org/sergeysova/redux-symbiote.svg?branch=master)](https://travis-ci.org/sergeysova/redux-symbiote) [![Coverage Status](https://coveralls.io/repos/github/sergeysova/redux-symbiote/badge.svg?branch=master)](https://coveralls.io/github/sergeysova/redux-symbiote?branch=master)
+# redux-symbiote [![Build Status](https://travis-ci.org/atomixinteractions/redux-symbiote.svg?branch=master)](https://travis-ci.org/atomixinteractions/redux-symbiote) [![Coverage Status](https://coveralls.io/repos/github/atomixinteractions/redux-symbiote/badge.svg?branch=master)](https://coveralls.io/github/atomixinteractions/redux-symbiote?branch=master)
 
 Write your actions and reducers without pain
 
