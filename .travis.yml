@@ -7,4 +7,7 @@ node_js:
 sudo: false
 
 script:
-  - nyc npm test && nyc report --reporter-text-lcov | coveralls
+  - npm test
+
+after_success:
+  - npm run report

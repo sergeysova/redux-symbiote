@@ -4,7 +4,9 @@
   "description": "Write your actions and reducers without pain",
   "main": "lib/index.js",
   "scripts": {
-    "test": "eslint . && ava"
+    "test": "eslint . && nyc ava",
+    "coverage": "NODE_ENV=test nyc report --reporter=text-lcov",
+    "report": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
