@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sergeysova/redux-symbiote.git"
+    "url": "git+https://github.com/atomixinteractions/redux-symbiote.git"
   },
   "contributors": [
     "Sergey Sova <mail@sergeysova.com> (https://sergeysova.com)",
@@ -18,7 +18,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sergeysova/redux-symbiote/issues"
+    "url": "https://github.com/atomixinteractions/redux-symbiote/issues"
   },
   "keywords": [
     "redux",
@@ -27,7 +27,7 @@
     "actions",
     "react"
   ],
-  "homepage": "https://github.com/sergeysova/redux-symbiote#readme",
+  "homepage": "https://github.com/atomixinteractions/redux-symbiote#readme",
   "dependencies": {},
   "devDependencies": {
     "@atomix/eslint-config": "^6.1.1",
