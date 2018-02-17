@@ -1,0 +1,37 @@
+{
+  "name": "redux-symbiote",
+  "version": "1.0.0",
+  "description": "Write your actions and reducers without pain",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "eslint . && ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergeysova/redux-symbiote.git"
+  },
+  "contributors": [
+    "Sergey Sova <mail@sergeysova.com> (https://sergeysova.com)",
+    "Viacheslav Bereza <mail@betula.co> (http://betula.co)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sergeysova/redux-symbiote/issues"
+  },
+  "keywords": [
+    "redux",
+    "flux",
+    "fsa",
+    "actions",
+    "react"
+  ],
+  "homepage": "https://github.com/sergeysova/redux-symbiote#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@atomix/eslint-config": "^6.1.1",
+    "ava": "^0.25.0",
+    "coveralls": "^3.0.0",
+    "eslint": "^4.18.0",
+    "nyc": "^11.4.1"
+  }
+}
