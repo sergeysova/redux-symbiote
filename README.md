@@ -90,6 +90,31 @@ dispatch(actions.data.set('bar')) // { type: 'data/set', payload: ['bar'] }
 dispatch(actions.data.concat('foo ')) // { type: 'data/concat', payload: ['foo '] }
 ```
 
+#### ActionHandler##toString
+
+You can use action as action type in classic reducer or in [`handleAction(s)`](https://redux-actions.js.org/docs/api/handleAction.html) in [`redux-actions`](https://npmjs.com/redux-actions)
+
+```js
+import { handleActions } from 'redux-actions'
+import { createSymbiote } from 'redux-symbiote'
+
+const { actions } = createSymbiote(initialState, {
+  foo: {
+    bar: {
+      baz: (arg1, arg2) => ({ data: arg1, atad: arg2 }),
+    },
+  },
+})
+
+const reducer = handleActions({
+  [actions.foo.bar.baz]: (state, { payload: [arg1, arg2] }) => ({
+    ...state,
+    data: arg1,
+    atad: arg2,
+  }),
+}, initialState)
+```
+
 ### How to use reducer
 
 `createSymbiote` returns object with `actions` and `reducer`.
