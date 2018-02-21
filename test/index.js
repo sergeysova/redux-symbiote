@@ -37,6 +37,7 @@ test('actions with state returns type and payload', (t) => {
   })
 
   t.deepEqual(actions.bar(1), { type: 'bar', payload: [1] })
+  t.is(actions.bar.toString(), 'bar', '.toString() return correct type')
 })
 
 test('nested actions returns type and payload', (t) => {
@@ -47,6 +48,7 @@ test('nested actions returns type and payload', (t) => {
   })
 
   t.deepEqual(actions.bar.foo(1), { type: 'bar/foo', payload: [1] })
+  t.is(actions.bar.foo.toString(), 'bar/foo', '.toString() return correct type')
 })
 
 test('nested actions with state returns type and payload', (t) => {
@@ -57,6 +59,7 @@ test('nested actions with state returns type and payload', (t) => {
   })
 
   t.deepEqual(actions.foo.bar(1), { type: 'foo/bar', payload: [1] })
+  t.is(actions.foo.bar.toString(), 'foo/bar', '.toString() return correct type')
 })
 
 test('reducer handle simple action and merges it', (t) => {
@@ -107,6 +110,8 @@ test('prefix', (t) => {
   t.deepEqual(actions.bar.foo('bar'), { type: 'baz/bar/foo', payload: ['bar'] }, 'nested action with state type')
   t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' }, 'reduce simple action')
   t.deepEqual(reducer(undefined, actions.bar.foo('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
+  t.is(actions.foo.toString(), 'baz/foo', 'foo.toString() return correct type')
+  t.is(actions.bar.foo.toString(), 'baz/bar/foo', 'bar.foo.toString() return correct type')
 })
 
 test('supernested with prefix', (t) => {
@@ -126,4 +131,5 @@ test('supernested with prefix', (t) => {
 
   t.deepEqual(actions.a.b.c.d.e.g('bar'), { type: 'prefix/a/b/c/d/e/g', payload: ['bar'] }, 'nested action with state type')
   t.deepEqual(reducer(undefined, actions.a.b.c.d.e.g('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
+  t.is(actions.a.b.c.d.e.g.toString(), 'prefix/a/b/c/d/e/g', '.toString() return correct type')
 })
