@@ -17,9 +17,9 @@ const initialState = {
 export const { actions, reducer } = createSymbiote(initialState, {
   accounts: {
     loading: {
-      start: () => ({ loading: true }),
-      failed: (error) => ({ loading: false, error }),
-      finish: (accounts) => ({ loading: false, accounts }),
+      start: (state) => ({ ...state, loading: true }),
+      failed: (state, error) => ({ ...state, loading: false, error }),
+      finish: (state, accounts) => ({ ...state, loading: false, accounts }),
     },
   },
 })
@@ -54,11 +54,11 @@ Example:
 
 ```js
 export const { actions, reducer } = createSymbiote({ value: 1, data: 'another' }, {
-  increment: () => (prevState) => ({ value: prevState.value + 1 }),
-  decrement: () => (prevState) => ({ value: prevState.value - 1 }),
-  setValue: (value) => ({ value }),
-  setData: (data) => ({ data }),
-  concatData: (data) => (prevState) => ({ data: data + prevState.data }),
+  increment: (state) => ({ ...state, value: state.value + 1 }),
+  decrement: (state) => ({ ...state, value: state.value - 1 }),
+  setValue: (state, value) => ({ ...state, value }),
+  setData: (state, data) => ({ ...state, data }),
+  concatData: (state, data) => ({ ...state, data: data + state.data }),
 })
 
 dispatch(actions.increment()) // { type: 'increment' }
@@ -75,12 +75,12 @@ Nested example
 ```js
 export const { actions, reducer } = createSymbiote({ value: 1, data: 'another' }, {
   value: {
-    increment: () => (prevState) => ({ value: prevState.value + 1 }),
-    decrement: () => (prevState) => ({ value: prevState.value - 1 }),
+    increment: (state) => ({ ...state, value: state.value + 1 }),
+    decrement: (state) => ({ ...state, value: state.value - 1 }),
   },
   data: {
-    set: (data) => ({ data }),
-    concat: (data) => (prevState) => ({ data: data + prevState.data }),
+    set: (state, data) => ({ ...state, data }),
+    concat: (state, data) => ({ ...state, data: data + state.data }),
   },
 })
 
@@ -101,7 +101,7 @@ import { createSymbiote } from 'redux-symbiote'
 const { actions } = createSymbiote(initialState, {
   foo: {
     bar: {
-      baz: (arg1, arg2) => ({ data: arg1, atad: arg2 }),
+      baz: (state, arg1, arg2) => ({ ...state, data: arg1, atad: arg2 }),
     },
   },
 })

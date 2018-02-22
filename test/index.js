@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import test from 'ava'
 import { createSymbiote } from '../lib/index'
 
@@ -62,18 +63,60 @@ test('nested actions with state returns type and payload', (t) => {
   t.is(actions.foo.bar.toString(), 'foo/bar', '.toString() return correct type')
 })
 
-test('reducer handle simple action and merges it', (t) => {
+test('reducer return action resul', (t) => {
   const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
-    foo: (value) => ({ value }),
+    foo: () => 100,
+  })
+
+  t.deepEqual(reducer(undefined, actions.foo(1)), 100)
+})
+
+test('action accepts state in first argument', (t) => {
+  const initialState = Symbol('initial state')
+
+  const { actions, reducer } = createSymbiote(initialState, {
+    foo: (state) => state,
+  })
+
+  t.is(reducer(undefined, actions.foo(1)), initialState)
+})
+
+test('action accepts arguments in call', (t) => {
+  const initialState = Symbol('initial state')
+  const a1 = Symbol('a1')
+  const a2 = Symbol('a2')
+  const a3 = Symbol('a3')
+  const a4 = Symbol('a4')
+  const a5 = Symbol('a5')
+  const a6 = Symbol('a6')
+
+  const { actions, reducer } = createSymbiote(initialState, {
+    foo: (state, a, b, c, d, e, f) => [a, b, c, d, e, f],
+  })
+
+  t.deepEqual(reducer(undefined, actions.foo(a1, a2, a3, a4, a5, a6)), [a1, a2, a3, a4, a5, a6])
+})
+
+test('reducer handle simple action and return result of action', (t) => {
+  const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
+    foo: (state, value) => ({ ...state, value }),
   })
 
   t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' })
 })
 
+test('reducer not merges state under the hood', (t) => {
+  const { actions, reducer } = createSymbiote({ a: 1, b: 2, c: 3 }, {
+    foo: (state, b) => ({ b }),
+  })
+
+  t.deepEqual(reducer(undefined, actions.foo(1)), { b: 1 })
+})
+
 test('reducer handle nested action and merges it', (t) => {
   const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
     bar: {
-      foo: (value) => ({ value }),
+      foo: (state, value) => ({ ...state, value }),
     },
   })
 
@@ -82,7 +125,7 @@ test('reducer handle nested action and merges it', (t) => {
 
 test('reducer handle simple action with state', (t) => {
   const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
-    foo: (data) => (state) => ({ value: state.value + 1, data }),
+    foo: (state, data) => ({ ...state, value: state.value + 1, data }),
   })
 
   t.deepEqual(reducer(undefined, actions.foo('bar')), { value: 1, data: 'bar' })
@@ -91,7 +134,7 @@ test('reducer handle simple action with state', (t) => {
 test('reducer handle nested action with state', (t) => {
   const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
     bar: {
-      foo: (data) => (state) => ({ value: state.value + 1, data }),
+      foo: (state, data) => ({ ...state, value: state.value + 1, data }),
     },
   })
 
@@ -100,9 +143,9 @@ test('reducer handle nested action with state', (t) => {
 
 test('prefix', (t) => {
   const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
-    foo: (value) => ({ value }),
+    foo: (state, value) => ({ ...state, value }),
     bar: {
-      foo: (data) => (state) => ({ value: state.value + 1, data }),
+      foo: (state, data) => ({ ...state, value: state.value + 1, data }),
     },
   }, 'baz')
 
@@ -121,7 +164,7 @@ test('supernested with prefix', (t) => {
         c: {
           d: {
             e: {
-              g: (data) => (state) => ({ value: state.value + 1, data }),
+              g: (state, data) => ({ ...state, value: state.value + 1, data }),
             },
           },
         },
