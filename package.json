@@ -25,7 +25,9 @@
     "flux",
     "fsa",
     "actions",
-    "react"
+    "react",
+    "act",
+    "reducer"
   ],
   "homepage": "https://github.com/atomixinteractions/redux-symbiote#readme",
   "dependencies": {},
