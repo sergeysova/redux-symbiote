@@ -39,8 +39,6 @@ function createSymbiote(
 
 ### Create action handler
 
-If action handler returns `function`, symbiote call it with previous state. On other hand, symbiote merges result of handler call with previous state
-
 ```js
 createSymbiote(initialState, {
   actionType: actionHandler,
@@ -70,7 +68,9 @@ dispatch(actions.concatData('foo ')) // { type: 'concatData', payload: ['foo '] 
 // State here { value: 3, data: 'foo bar' }
 ```
 
-Nested example
+When you call `actions.setValue` symbiote calls your action handler with previousState and all arguments.
+
+#### Nested example
 
 ```js
 export const { actions, reducer } = createSymbiote({ value: 1, data: 'another' }, {
