@@ -137,6 +137,32 @@ export const reducer = combineReducers({
 })
 ```
 
+## Fetching
+
+```js
+import { createSymbiote, createFetching, handleFetching, initialFetching } from 'redux-symbiote'
+
+const initialState = {
+  ...initialFetching, // { 'symbiote/fetching': 0, 'error': null }
+  data: [],
+}
+
+export const { actions, reducer } = createSymbiote(initialState, {
+  fetching: createFetching(),
+  setData: (state, data) => ({ ...state, data }),
+  resetData: (state) => ({ ...state, data: initialState.data }),
+}, 'special/data/prefix')
+
+export const fetchData = (id) => handleFetching(actions.fetching, {
+  before: (dispatch) => dispatch(actions.resetData()),
+  run: async (dispatch, getState, { api }) => {
+    const result = await api.get('/data', { id })
+
+    dispatch(actions.setData(result.data))
+  },
+})
+```
+
 ## Why?
 
 Redux recommends create constants, action creators and reducers separately.
