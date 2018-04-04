@@ -3,7 +3,6 @@
   "version": "2.0.2",
   "description": "Write your actions and reducers without pain",
   "main": "lib/index.js",
-  "module": "src/index.js",
   "scripts": {
     "test": "eslint . && nyc ava",
     "build": "babel ./src -d ./lib",
