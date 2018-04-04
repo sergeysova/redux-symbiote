@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers */
 import test from 'ava'
-import { createSymbiote } from '../lib/index'
+import { createSymbiote } from '../src/index'
 
 
 test('createSymbiote return actions and reducer', (t) => {
