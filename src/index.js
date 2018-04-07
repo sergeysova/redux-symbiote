@@ -1,10 +1,13 @@
 const fetcherType = '@@redux-symbiote/fetcher'
 const fetcherHandlers = '@@redux-symbiote/fetcher-handlers'
 const fetchTypes = ['request', 'response', 'error']
+
+const identity = payload => payload
+
 const fetchDefaultHandlers = {
-  request: () => {},
-  response: () => {},
-  error: () => {},
+  request: identity,
+  response: identity,
+  error: identity,
 }
 
 const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
@@ -22,7 +25,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
           const { request, response, error } = handler[fetcherHandlers]
           const typeBase = currentPath.concat(type).join('/')
           const types = fetchTypes.reduce(
-            (acc, fetchType) => (...acc, [fetchType]: `${typeBase}/${fetchType}`),
+            (acc, fetchType) => ({...acc, [fetchType]: `${typeBase}/${fetchType}`}),
             {}
           )
 
@@ -75,7 +78,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 }
 
 const handleFetching = (sideEffect, handlers) => {
-  const fetcher = () => sideEffect()
+  const fetcher = (...args) => sideEffect(...args)
   fetcher[fetcherType] = true
   fetcher[fetcherHandlers] = handlers ? { ...fetchDefaultHandlers, ...handlers } : fetchDefaultHandlers
   return fetcher
