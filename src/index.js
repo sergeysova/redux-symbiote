@@ -1,3 +1,11 @@
+const fetcherType = '@@redux-symbiote/fetcher'
+const fetcherHandlers = '@@redux-symbiote/fetcher-handlers'
+const fetchTypes = ['request', 'response', 'error']
+const fetchDefaultHandlers = {
+  request: () => {},
+  response: () => {},
+  error: () => {},
+}
 
 const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   const handlersList = {}
@@ -10,12 +18,36 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
       const handler = rootConfig[key]
 
       if (typeof handler === 'function') {
-        const type = currentPath.join('/')
+        if (handler[fetcherType] === true) {
+          const { request, response, error } = handler[fetcherHandlers]
+          const typeBase = currentPath.concat(type).join('/')
+          const types = fetchTypes.reduce(
+            (acc, fetchType) => (...acc, [fetchType]: `${typeBase}/${fetchType}`),
+            {}
+          )
 
-        actionsList[key] = (...args) => ({ type, payload: args })
-        actionsList[key].toString = () => type
+          actionsList[key] = (...args) => async (dispatch, getState, extraArgument) => {
+            dispatch(({ type: types.request, payload: args }))
+            try {
+              const result = await handler(...args)
+              dispatch(({ type: types.response, payload: [result] }))
+            } catch (error) {
+              dispatch(({ type: types.error, payload: [error] }))
+            }
+          }
+          actionsList[key].toString = () => types.request
 
-        handlersList[type] = handler
+          handlersList[type.request] = request
+          handlersList[type.response] = response
+          handlersList[type.error] = error
+        } else {
+          const type = currentPath.join('/')
+
+          actionsList[key] = (...args) => ({ type, payload: args })
+          actionsList[key].toString = () => type
+
+          handlersList[type] = handler
+        }
       }
       else {
         actionsList[key] = traverseActions(rootConfig[key], currentPath)
@@ -42,6 +74,14 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   }
 }
 
+const handleFetching = (sideEffect, handlers) => {
+  const fetcher = () => sideEffect()
+  fetcher[fetcherType] = true
+  fetcher[fetcherHandlers] = handlers ? { ...fetchDefaultHandlers, ...handlers } : fetchDefaultHandlers
+  return fetcher
+}
+
 module.exports = {
   createSymbiote,
+  handleFetching,
 }
