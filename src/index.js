@@ -42,17 +42,20 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   }
 }
 
-export const handleSideEffect = (name, processor) => ({
+export const handleSideEffect = (
+  name,
+  [beforeHandlerName, successHandlerName, errorHandlerName]
+) => ({
   [name](sideEffect) {
     return (...args) => async (dispatch, getState, extraArgument) => {
-      dispatch({ type: this[processor[0]].toString(), payload: args })
+      dispatch({ type: this[beforeHandlerName].toString(), payload: args })
       try {
         const result = await sideEffect(dispatch, getState, extraArgument)(...args)
 
-        dispatch({ type: this[processor[1]].toString(), payload: [result] })
+        dispatch({ type: this[successHandlerName].toString(), payload: [result] })
       }
       catch (error) {
-        dispatch({ type: this[processor[2]].toString(), payload: [error] })
+        dispatch({ type: this[errorHandlerName].toString(), payload: [error] })
       }
     }
   },
