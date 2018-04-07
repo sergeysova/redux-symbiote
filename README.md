@@ -237,7 +237,7 @@ export const accountsReducer = handleActions({
 ## Side effects
 
 ```js
-import { createSymbiote, createSideEffect } from 'redux-symbiote'
+import { createSymbiote, withSideEffect } from 'redux-symbiote'
 
 
 const initialState = {
@@ -248,7 +248,7 @@ const initialState = {
 
 export const { actions, reducer } = createSymbiote(initialState, {
   classicSymbiotAction: (state, someData) => ({ ...state, ...someData}),
-  loadData: createSideEffect({
+  loadData: withSideEffect({
     // first action in this collection takes side effect function and it arguments
     // dispatch action and handle it by code below
     // then call side effect function

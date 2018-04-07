@@ -48,7 +48,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   }
 }
 
-const createSideEffect = (handlers) => {
+const withSideEffect = (handlers) => {
   const [
     beforeHandlerName,
     successHandlerName,
@@ -85,6 +85,6 @@ const createSideEffect = (handlers) => {
 
 module.exports = {
   createSymbiote,
-  createSideEffect,
+  withSideEffect,
   symbioteSecret,
 }
