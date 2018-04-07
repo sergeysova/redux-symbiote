@@ -42,7 +42,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   }
 }
 
-export const handleSideEffect = (
+const handleSideEffect = (
   name,
   [beforeHandlerName, successHandlerName, errorHandlerName]
 ) => ({
