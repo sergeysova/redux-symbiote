@@ -1,5 +1,5 @@
 const symbioteSecret = {
-  actionInside: Symbol('object is contains action function for actions list'),
+  actionInside: Symbol('handler is contains action function for actions list'),
   action: Symbol('action function for actions list'),
 }
 
@@ -85,6 +85,6 @@ const withSideEffect = (handlers) => {
 
 module.exports = {
   createSymbiote,
-  withSideEffect,
   symbioteSecret,
+  withSideEffect,
 }
