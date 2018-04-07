@@ -234,3 +234,27 @@ export const accountsReducer = handleActions({
   [actions.loading.finish]: (state, { payload: { accounts } }) => ({ ...state, accounts }),
 }, initialState)
 ```
+
+## Side effects
+```js
+import { createSymbiote, handleFetching } from 'redux-symbiote'
+
+
+const initialState = {
+  error: null,
+  accounts: [],
+  loading: false,
+}
+
+export const { actions, reducer } = createSymbiote(initialState, {
+  accounts: {
+    loading: handleFetching(
+      (data) => api.method(data),
+      {
+        request: (state) => ({ ...state, loading: true }),
+        response: (state, result) => ({ ...state, loading: false, ...result }),
+        error: (state, error) => ({ ...state, loading: false, error }),
+      }),
+  },
+})
+```
