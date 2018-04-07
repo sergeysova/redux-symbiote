@@ -21,11 +21,12 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
       const handler = rootConfig[key]
 
       if (typeof handler === 'function') {
+        const type = currentPath.join('/')
+
         if (handler[fetcherType] === true) {
           const { request, response, error } = handler[fetcherHandlers]
-          const typeBase = currentPath.concat(type).join('/')
           const types = fetchTypes.reduce(
-            (acc, fetchType) => Object.assign(acc, { [fetchType]: `${typeBase}/${fetchType}` }),
+            (acc, fetchType) => Object.assign(acc, { [fetchType]: `${type}/${fetchType}` }),
             {}
           )
 
@@ -44,8 +45,6 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
           handlersList[type.response] = response
           handlersList[type.error] = error
         } else {
-          const type = currentPath.join('/')
-
           actionsList[key] = (...args) => ({ type, payload: args })
           actionsList[key].toString = () => type
 
