@@ -84,7 +84,7 @@ const handleSideEffect = (sideEffectUser, handlers) => {
 
   sideEffect[sideEffectType] = true
   sideEffect[sideEffectHandlers] = handlers
-    ? Object.assign(sideEffectDefaultHandlers, handlers)
+    ? Object.assign({}, sideEffectDefaultHandlers, handlers)
     : sideEffectDefaultHandlers
   return sideEffect
 }
