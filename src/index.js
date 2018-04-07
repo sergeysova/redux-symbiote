@@ -10,7 +10,7 @@ const sideEffectDefaultHandlers = {
   error: identity,
 }
 
-const createSymbiote = (initialState, actionsConfig, actionTypePostfix = '') => {
+const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   const handlersList = {}
 
   const traverseActions = (rootConfig, rootPath = []) => {
@@ -64,7 +64,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePostfix = '') => 
 
   const actionsList = traverseActions(
     actionsConfig,
-    actionTypePostfix ? [actionTypePostfix] : undefined
+    actionTypePrefix ? [actionTypePrefix] : undefined
   )
 
   return {
