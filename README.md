@@ -253,9 +253,9 @@ export const { actions, reducer } = createSymbiote(initialState, {
     // optional handlers
     {
       // handle before call side effect
-      request: (state) => ({ ...state, loading: true }),
+      before: (state) => ({ ...state, loading: true }),
       // handle after success side effect
-      response: (state, data) => ({ ...state, loading: false, data }),
+      success: (state, data) => ({ ...state, loading: false, data }),
       // handle error side effect
       error: (state, error) => ({ ...state, loading: false, error }),
     }),
@@ -263,5 +263,5 @@ export const { actions, reducer } = createSymbiote(initialState, {
 
 // usage
 const myArgs = { callApi: true }
-dispatch(actions.loading(myArgs))
+dispatch(actions.someWork(myArgs))
 ```
