@@ -63,7 +63,7 @@ const withSideEffect = (handlers) => {
     return async (dispatch, getState, extraArgument) => {
       dispatch({ type: this[beforeHandlerName].toString(), payload: args })
       try {
-        const result = await sideEffect(dispatch, getState, extraArgument)(...args)
+        const result = await sideEffect(...args)(dispatch, getState, extraArgument)
 
         dispatch({ type: this[successHandlerName].toString(), payload: [result] })
       }

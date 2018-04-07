@@ -253,14 +253,14 @@ export const { actions, reducer } = createSymbiote(initialState, {
     // dispatch action and handle it by code below
     // then call side effect function
     request: (state, options) => ({ ...state, loading: true }),
-    // second handle in this collection will trigger by action after side effect end
-    success: (state, data) => ({ ...state, loading: false, data }),
-    // third handle in this collection will trigger by action after side effect throw error
+    // second handle in this collection will trigger by action when side effect end
+    response: (state, data) => ({ ...state, loading: false, data }),
+    // third handle in this collection will trigger by action when side effect throw error
     error: (state, error) => ({ ...state, loading: false, error }),
   }),
 })
 
 // usage
-const sideEffect = (dispatch, getState, extraArgument) => async (args) => await api.method()
+const sideEffect = (args) => async (dispatch, getState, extraArgument) => await api.method()
 dispatch(actions.loadData.request(sideEffect, args))
 ```
