@@ -32,7 +32,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
           actionsList[key] = (...args) => async (dispatch, getState, extraArgument) => {
             dispatch(({ type: types.request, payload: args }))
             try {
-              const result = await handler(...args)
+              const result = await handler(dispatch, getState, extraArgument)(...args)
               dispatch(({ type: types.response, payload: [result] }))
             } catch (error) {
               dispatch(({ type: types.error, payload: [error] }))
