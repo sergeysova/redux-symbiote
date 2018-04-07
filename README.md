@@ -237,7 +237,7 @@ export const accountsReducer = handleActions({
 ## Side effects
 
 ```js
-import { createSymbiote, handleSideEffect } from 'redux-symbiote'
+import { createSymbiote, createSideEffect } from 'redux-symbiote'
 
 
 const initialState = {
@@ -248,17 +248,19 @@ const initialState = {
 
 export const { actions, reducer } = createSymbiote(initialState, {
   classicSymbiotAction: (state, someData) => ({ ...state, ...someData}),
-  ...handleSideEffect(loadData, ['before', 'success', 'error']),
-  // handle before call side effect
-  before: (state, options) => ({ ...state, loading: true }),
-  // handle after success side effect
-  success: (state, data) => ({ ...state, loading: false, data }),
-  // handle error side effect
-  error: (state, error) => ({ ...state, loading: false, error }),
+  loadData: createSideEffect({
+    // first action in this collection takes side effect function and it arguments
+    // dispatch action and handle it by code below
+    // then call side effect function
+    request: (state, options) => ({ ...state, loading: true }),
+    // second handle in this collection will trigger by action after side effect end
+    success: (state, data) => ({ ...state, loading: false, data }),
+    // third handle in this collection will trigger by action after side effect throw error
+    error: (state, error) => ({ ...state, loading: false, error }),
+  }),
 })
 
 // usage
-const sideEffect = (dispatch, getState, extraArgument) => async (options) => await api.method(options)
-const loadData = actions.loadData(sideEffect)
-dispatch(loadData(options))
+const sideEffect = (dispatch, getState, extraArgument) => async (args) => await api.method()
+dispatch(actions.loadData.request(sideEffect, args))
 ```

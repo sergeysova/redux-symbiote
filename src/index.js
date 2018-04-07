@@ -1,3 +1,7 @@
+const symbioteSecret = {
+  actionInside: Symbol('object is contains action function for actions list'),
+  action: Symbol('action function for actions list'),
+}
 
 const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   const handlersList = {}
@@ -12,7 +16,9 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
       if (typeof handler === 'function') {
         const type = currentPath.join('/')
 
-        actionsList[key] = (...args) => ({ type, payload: args })
+        actionsList[key] = handler[symbioteSecret.actionInside]
+          ? handler[symbioteSecret.action]
+          : (...args) => ({ type, payload: args })
         actionsList[key].toString = () => type
 
         handlersList[type] = handler
@@ -42,12 +48,19 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   }
 }
 
-const handleSideEffect = (
-  name,
-  [beforeHandlerName, successHandlerName, errorHandlerName]
-) => ({
-  [name](sideEffect) {
-    return (...args) => async (dispatch, getState, extraArgument) => {
+const createSideEffect = (handlers) => {
+  const [
+    beforeHandlerName,
+    successHandlerName,
+    errorHandlerName,
+    ...restHandlers
+  ] = Object.keys(handlers)
+  const beforeHandler = handlers[beforeHandlerName]
+  const initiatorHandler = (...args) => beforeHandler(...args)
+
+  initiatorHandler[symbioteSecret.actionInside] = true
+  initiatorHandler[symbioteSecret.action] = function initiatorHandlerBlank(sideEffect, ...args) {
+    return async (dispatch, getState, extraArgument) => {
       dispatch({ type: this[beforeHandlerName].toString(), payload: args })
       try {
         const result = await sideEffect(dispatch, getState, extraArgument)(...args)
@@ -58,10 +71,20 @@ const handleSideEffect = (
         dispatch({ type: this[errorHandlerName].toString(), payload: [error] })
       }
     }
-  },
-})
+  }
+
+  return Object.assign({
+    [beforeHandlerName]: initiatorHandler,
+    [successHandlerName]: handlers[successHandlerName],
+    [errorHandlerName]: handlers[errorHandlerName],
+  }, restHandlers.reduce(
+    (acc, handlerName) => Object.assign(acc, { [handlerName]: restHandlers[handlerName] }),
+    {},
+  ))
+}
 
 module.exports = {
   createSymbiote,
-  handleSideEffect,
+  createSideEffect,
+  symbioteSecret,
 }
