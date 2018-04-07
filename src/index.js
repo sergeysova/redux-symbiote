@@ -25,7 +25,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
           const { request, response, error } = handler[fetcherHandlers]
           const typeBase = currentPath.concat(type).join('/')
           const types = fetchTypes.reduce(
-            (acc, fetchType) => ({...acc, [fetchType]: `${typeBase}/${fetchType}`}),
+            (acc, fetchType) => Object.assign(acc, { [fetchType]: `${typeBase}/${fetchType}` }),
             {}
           )
 
@@ -80,7 +80,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 const handleFetching = (sideEffect, handlers) => {
   const fetcher = (...args) => sideEffect(...args)
   fetcher[fetcherType] = true
-  fetcher[fetcherHandlers] = handlers ? { ...fetchDefaultHandlers, ...handlers } : fetchDefaultHandlers
+  fetcher[fetcherHandlers] = handlers ? Object.assign(fetchDefaultHandlers, handlers) : fetchDefaultHandlers
   return fetcher
 }
 
