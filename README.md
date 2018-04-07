@@ -247,16 +247,21 @@ const initialState = {
 }
 
 export const { actions, reducer } = createSymbiote(initialState, {
-  accounts: {
-    loading: handleFetching(
-      // side effect
-      (data) => api.method(data),
-      // optional handlers
-      {
-        request: (state) => ({ ...state, loading: true }),
-        response: (state, result) => ({ ...state, loading: false, ...result }),
-        error: (state, error) => ({ ...state, loading: false, error }),
-      }),
-  },
+  loading: handleFetching(
+    // side effect
+    (dispatch, getState, extraArgument) =>
+      async (data /* === 'argument' */) => await api.method(data),
+    // optional handlers
+    {
+      // handle before call side effect
+      request: (state) => ({ ...state, loading: true }),
+      // handle after success side effect
+      response: (state, result) => ({ ...state, loading: false, ...result }),
+      // handle error side effect
+      error: (state, error) => ({ ...state, loading: false, error }),
+    }),
 })
+
+// usage
+dispatch(actions.loading('argument'))
 ```
