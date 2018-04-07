@@ -234,3 +234,34 @@ export const accountsReducer = handleActions({
   [actions.loading.finish]: (state, { payload: { accounts } }) => ({ ...state, accounts }),
 }, initialState)
 ```
+
+## Side effects
+```js
+import { createSymbiote, handleSideEffect } from 'redux-symbiote'
+
+const initialState = {
+  error: null,
+  loading: false,
+  data: {},
+}
+
+export const { actions, reducer } = createSymbiote(initialState, {
+  someWork: handleSideEffect(
+    // side effect
+    (dispatch, getState, extraArgument) =>
+      async (payload /* === myArgs */) => await api.method(payload),
+    // optional handlers
+    {
+      // handle before call side effect
+      before: (state) => ({ ...state, loading: true }),
+      // handle after success side effect
+      success: (state, data) => ({ ...state, loading: false, data }),
+      // handle error side effect
+      error: (state, error) => ({ ...state, loading: false, error }),
+    }),
+})
+
+// usage
+const myArgs = { callApi: true }
+dispatch(actions.someWork(myArgs))
+```
