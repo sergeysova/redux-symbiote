@@ -1,16 +1,16 @@
-const fetcherType = '@@redux-symbiote/fetcher'
-const fetcherHandlers = '@@redux-symbiote/fetcher-handlers'
-const fetchTypes = ['request', 'response', 'error']
+const sideEffectType = '@@redux-symbiote/sideEffect'
+const sideEffectHandlers = '@@redux-symbiote/sideEffect-handlers'
+const sideEffectPostfix = ['before', 'success', 'error']
 
-const identity = payload => payload
+const identity = (payload) => payload
 
-const fetchDefaultHandlers = {
-  request: identity,
-  response: identity,
+const sideEffectDefaultHandlers = {
+  before: identity,
+  success: identity,
   error: identity,
 }
 
-const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
+const createSymbiote = (initialState, actionsConfig, actionTypePostfix = '') => {
   const handlersList = {}
 
   const traverseActions = (rootConfig, rootPath = []) => {
@@ -23,28 +23,31 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
       if (typeof handler === 'function') {
         const type = currentPath.join('/')
 
-        if (handler[fetcherType] === true) {
-          const { request, response, error } = handler[fetcherHandlers]
-          const types = fetchTypes.reduce(
-            (acc, fetchType) => Object.assign(acc, { [fetchType]: `${type}/${fetchType}` }),
+        if (handler[sideEffectType] === true) {
+          const { before, success, error: errorHandler } = handler[sideEffectHandlers]
+          const types = sideEffectPostfix.reduce(
+            (acc, postfix) => Object.assign(acc, { [postfix]: `${type}/${postfix}` }),
             {}
           )
 
           actionsList[key] = (...args) => async (dispatch, getState, extraArgument) => {
-            dispatch(({ type: types.request, payload: args }))
+            dispatch(({ type: types.before, payload: args }))
             try {
               const result = await handler(dispatch, getState, extraArgument)(...args)
-              dispatch(({ type: types.response, payload: [result] }))
-            } catch (error) {
+
+              dispatch(({ type: types.success, payload: [result] }))
+            }
+            catch (error) {
               dispatch(({ type: types.error, payload: [error] }))
             }
           }
-          actionsList[key].toString = () => types.request
+          actionsList[key].toString = () => types.before
 
-          handlersList[type.request] = request
-          handlersList[type.response] = response
-          handlersList[type.error] = error
-        } else {
+          handlersList[type.before] = before
+          handlersList[type.success] = success
+          handlersList[type.error] = errorHandler
+        }
+        else {
           actionsList[key] = (...args) => ({ type, payload: args })
           actionsList[key].toString = () => type
 
@@ -61,7 +64,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 
   const actionsList = traverseActions(
     actionsConfig,
-    actionTypePrefix ? [actionTypePrefix] : undefined
+    actionTypePostfix ? [actionTypePostfix] : undefined
   )
 
   return {
@@ -76,14 +79,17 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   }
 }
 
-const handleFetching = (sideEffect, handlers) => {
-  const fetcher = (...args) => sideEffect(...args)
-  fetcher[fetcherType] = true
-  fetcher[fetcherHandlers] = handlers ? Object.assign(fetchDefaultHandlers, handlers) : fetchDefaultHandlers
-  return fetcher
+const handleSideEffect = (sideEffectUser, handlers) => {
+  const sideEffect = (...args) => sideEffectUser(...args)
+
+  sideEffect[sideEffectType] = true
+  sideEffect[sideEffectHandlers] = handlers
+    ? Object.assign(sideEffectDefaultHandlers, handlers)
+    : sideEffectDefaultHandlers
+  return sideEffect
 }
 
 module.exports = {
   createSymbiote,
-  handleFetching,
+  handleSideEffect,
 }

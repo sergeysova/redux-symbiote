@@ -237,7 +237,7 @@ export const accountsReducer = handleActions({
 
 ## Side effects
 ```js
-import { createSymbiote, handleFetching } from 'redux-symbiote'
+import { createSymbiote, handleSideEffect } from 'redux-symbiote'
 
 
 const initialState = {
@@ -247,7 +247,7 @@ const initialState = {
 }
 
 export const { actions, reducer } = createSymbiote(initialState, {
-  loading: handleFetching(
+  loading: handleSideEffect(
     // side effect
     (dispatch, getState, extraArgument) =>
       async (data /* === 'argument' */) => await api.method(data),
