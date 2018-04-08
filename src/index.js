@@ -1,5 +1,16 @@
+let globalScope
+
+try {
+  globalScope = global
+}
+catch (error) {
+  globalScope = window
+}
+
+const createSymbol = globalScope.Symbol || ((name) => `@@redux-symbiote/${name}`)
+
 const symbioteSecret = {
-  getActionCreator: Symbol('function in handler that receive type and return action creator'),
+  getActionCreator: createSymbol('action function for actions list'),
 }
 
 const getActionCreatorDefault = (type) => (...args) => ({ type, payload: args })
@@ -13,9 +24,9 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
     Object.keys(rootConfig).forEach((key) => {
       const currentPath = rootPath.concat(key)
       const handler = rootConfig[key]
+      const type = currentPath.join('/')
 
       if (typeof handler === 'function') {
-        const type = currentPath.join('/')
         const getActionCreator = handler[symbioteSecret.getActionCreator] || getActionCreatorDefault
 
         actionsList[key] = getActionCreator(type)
@@ -38,7 +49,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 
   return {
     actions: actionsList,
-    reducer: (previousState = initialState, { type, payload: args }) => {
+    reducer: (previousState = initialState, { type, payload: args = [] }) => {
       const handler = handlersList[type]
 
       return handler
