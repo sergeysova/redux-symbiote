@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers */
 import test from 'ava'
-import { createSymbiote } from '../src/index'
+import { createSymbiote, symbioteSecret } from '../src/index'
 
 
 test('createSymbiote return actions and reducer', (t) => {
@@ -8,6 +8,11 @@ test('createSymbiote return actions and reducer', (t) => {
 
   t.deepEqual(result.actions, {}, 'actions is not an object')
   t.is(typeof result.reducer, 'function', 'reducer is not a function')
+})
+
+test('symbioteSecret is map', (t) => {
+  t.is(typeof symbioteSecret, 'object')
+  t.deepEqual(Object.keys(symbioteSecret), ['action'])
 })
 
 test('reducer return previous state', (t) => {
@@ -69,6 +74,17 @@ test('reducer return action resul', (t) => {
   })
 
   t.deepEqual(reducer(undefined, actions.foo(1)), 100)
+})
+
+test('createSymbiote with extended action', (t) => {
+  const extendedAction = () => 5
+
+  const { actions, reducer } = createSymbiote({}, {
+    foo: { [symbioteSecret.action]: extendedAction },
+  })
+
+  t.is(actions.foo, extendedAction)
+  // t.is(reducer({}, { type: 'foo' }), 5)
 })
 
 test('action accepts state in first argument', (t) => {

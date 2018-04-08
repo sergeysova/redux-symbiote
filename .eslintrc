@@ -1,3 +1,6 @@
 {
-  "extends": "@atomix/eslint-config"
+  "extends": "@atomix/eslint-config",
+  "env": {
+    "browser": true
+  }
 }
