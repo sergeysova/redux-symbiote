@@ -61,17 +61,18 @@ const withSideEffect = (handlers) => {
   let successHandlerType = ''
   let errorHandlerType = ''
 
-  beforeHandler[symbioteSecret.getActionCreator] = (type) => (sideEffect, ...args) => async (dispatch, getState, extraArgument) => {
-    dispatch({ type, payload: args })
-    try {
-      const result = await sideEffect(...args)(dispatch, getState, extraArgument)
+  beforeHandler[symbioteSecret.getActionCreator] = (beforeHandlerType) =>
+    (sideEffect, ...args) => async (dispatch, getState, extraArgument) => {
+      dispatch({ type: beforeHandlerType, payload: args })
+      try {
+        const result = await sideEffect(...args)(dispatch, getState, extraArgument)
 
-      dispatch({ type: successHandlerType, payload: [result] })
+        dispatch({ type: successHandlerType, payload: [result] })
+      }
+      catch (error) {
+        dispatch({ type: errorHandlerType, payload: [error] })
+      }
     }
-    catch (error) {
-      dispatch({ type: errorHandlerType, payload: [error] })
-    }
-  }
 
   successHandler[symbioteSecret.getActionCreator] = (type) => {
     successHandlerType = type
