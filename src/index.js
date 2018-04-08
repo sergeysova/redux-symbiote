@@ -1,3 +1,7 @@
+const symbioteSecret = {
+  actionInside: Symbol('handler is contains action function for actions list'),
+  action: Symbol('action function for actions list'),
+}
 
 const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   const handlersList = {}
@@ -12,7 +16,9 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
       if (typeof handler === 'function') {
         const type = currentPath.join('/')
 
-        actionsList[key] = (...args) => ({ type, payload: args })
+        actionsList[key] = handler[symbioteSecret.actionInside]
+          ? handler[symbioteSecret.action]
+          : (...args) => ({ type, payload: args })
         actionsList[key].toString = () => type
 
         handlersList[type] = handler
@@ -44,4 +50,5 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 
 module.exports = {
   createSymbiote,
+  symbioteSecret,
 }
