@@ -1,13 +1,6 @@
-let globalScope
+const getSymbolCreator = () => typeof Symbol === 'function' ? Symbol : (name) => `@@redux-symbiote/${name}`
 
-try {
-  globalScope = global
-}
-catch (error) {
-  globalScope = window
-}
-
-const createSymbol = globalScope.Symbol || ((name) => `@@redux-symbiote/${name}`)
+const createSymbol = getSymbolCreator()
 
 const symbioteSecret = {
   getActionCreator: createSymbol('action function for actions list'),
@@ -62,4 +55,8 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 module.exports = {
   createSymbiote,
   symbioteSecret,
+}
+
+if (process.env.NODE_ENV === 'test') {
+  module.exports.getSymbolCreator = getSymbolCreator
 }
