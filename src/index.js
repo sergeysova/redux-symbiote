@@ -53,34 +53,41 @@ const withSideEffect = (handlers) => {
     beforeHandlerName,
     successHandlerName,
     errorHandlerName,
-    ...restHandlers
   ] = Object.keys(handlers)
-  const beforeHandler = handlers[beforeHandlerName]
-  const initiatorHandler = (...args) => beforeHandler(...args)
+  const beforeHandler = (...args) => handlers[beforeHandlerName](...args)
+  const successHandler = (...args) => handlers[successHandlerName](...args)
+  const errorHandler = (...args) => handlers[errorHandlerName](...args)
 
-  initiatorHandler[symbioteSecret.actionInside] = true
-  initiatorHandler[symbioteSecret.action] = function initiatorHandlerBlank(sideEffect, ...args) {
-    return async (dispatch, getState, extraArgument) => {
-      dispatch({ type: this[beforeHandlerName].toString(), payload: args })
-      try {
-        const result = await sideEffect(...args)(dispatch, getState, extraArgument)
+  let successHandlerType = ''
+  let errorHandlerType = ''
 
-        dispatch({ type: this[successHandlerName].toString(), payload: [result] })
-      }
-      catch (error) {
-        dispatch({ type: this[errorHandlerName].toString(), payload: [error] })
-      }
+  beforeHandler[symbioteSecret.getActionCreator] = (type) => (sideEffect, ...args) => async (dispatch, getState, extraArgument) => {
+    dispatch({ type, payload: args })
+    try {
+      const result = await sideEffect(...args)(dispatch, getState, extraArgument)
+
+      dispatch({ type: successHandlerType, payload: [result] })
+    }
+    catch (error) {
+      dispatch({ type: errorHandlerType, payload: [error] })
     }
   }
 
-  return Object.assign({
-    [beforeHandlerName]: initiatorHandler,
-    [successHandlerName]: handlers[successHandlerName],
-    [errorHandlerName]: handlers[errorHandlerName],
-  }, restHandlers.reduce(
-    (acc, handlerName) => Object.assign(acc, { [handlerName]: restHandlers[handlerName] }),
-    {},
-  ))
+  successHandler[symbioteSecret.getActionCreator] = (type) => {
+    successHandlerType = type
+    return getActionCreatorDefault(type)
+  }
+
+  errorHandler[symbioteSecret.getActionCreator] = (type) => {
+    errorHandlerType = type
+    return getActionCreatorDefault(type)
+  }
+
+  return {
+    [beforeHandlerName]: beforeHandler,
+    [successHandlerName]: successHandler,
+    [errorHandlerName]: errorHandler,
+  }
 }
 
 module.exports = {
