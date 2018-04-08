@@ -1,6 +1,7 @@
+const createSymbol = (name) => `@@redux-symbiote/${name}`
+
 const symbioteSecret = {
-  actionInside: Symbol('handler is contains action function for actions list'),
-  action: Symbol('action function for actions list'),
+  action: createSymbol('action function for actions list'),
 }
 
 const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
@@ -12,16 +13,17 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
     Object.keys(rootConfig).forEach((key) => {
       const currentPath = rootPath.concat(key)
       const handler = rootConfig[key]
+      const type = currentPath.join('/')
 
       if (typeof handler === 'function') {
-        const type = currentPath.join('/')
-
-        actionsList[key] = handler[symbioteSecret.actionInside]
-          ? handler[symbioteSecret.action]
-          : (...args) => ({ type, payload: args })
+        actionsList[key] = (...args) => ({ type, payload: args })
         actionsList[key].toString = () => type
 
         handlersList[type] = handler
+      }
+      else if (handler && typeof handler[symbioteSecret.action] === 'function') {
+        actionsList[type] = handler[symbioteSecret.action]
+        handlersList[type] = handler[symbioteSecret.action]
       }
       else {
         actionsList[key] = traverseActions(rootConfig[key], currentPath)
@@ -38,7 +40,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 
   return {
     actions: actionsList,
-    reducer: (previousState = initialState, { type, payload: args }) => {
+    reducer: (previousState = initialState, { type, payload: args = [] }) => {
       const handler = handlersList[type]
 
       return handler
