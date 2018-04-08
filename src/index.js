@@ -10,7 +10,7 @@ catch (error) {
 const createSymbol = globalScope.Symbol || ((name) => `@@redux-symbiote/${name}`)
 
 const symbioteSecret = {
-  actionCreator: createSymbol('action function for actions list'),
+  getActionCreator: createSymbol('action function for actions list'),
 }
 
 const getActionCreatorDefault = (type) => (...args) => ({ type, payload: args })
