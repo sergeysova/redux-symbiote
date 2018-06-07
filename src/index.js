@@ -52,9 +52,57 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   }
 }
 
+const withSideEffect = (handlers) => {
+  const [
+    beforeHandlerName,
+    successHandlerName,
+    errorHandlerName,
+  ] = Object.keys(handlers)
+  const beforeHandler = (...args) => handlers[beforeHandlerName](...args)
+  const successHandler = (...args) => handlers[successHandlerName](...args)
+  const errorHandler = (...args) => handlers[errorHandlerName](...args)
+
+  let successHandlerType = ''
+  let errorHandlerType = ''
+
+  beforeHandler[symbioteSecret.getActionCreator] = (beforeHandlerType) =>
+    (sideEffect, ...args) => async (dispatch, getState, extraArgument) => {
+      dispatch({ type: beforeHandlerType, payload: args })
+      try {
+        const result = await sideEffect(...args)(dispatch, getState, extraArgument)
+
+        dispatch({ type: successHandlerType, payload: [result] })
+      }
+      catch (error) {
+        dispatch({ type: errorHandlerType, payload: [error] })
+      }
+    }
+
+  successHandler[symbioteSecret.getActionCreator] = (type) => {
+    successHandlerType = type
+    return getActionCreatorDefault(type)
+  }
+
+  errorHandler[symbioteSecret.getActionCreator] = (type) => {
+    errorHandlerType = type
+    return getActionCreatorDefault(type)
+  }
+
+  return {
+    [beforeHandlerName]: beforeHandler,
+    [successHandlerName]: successHandler,
+    [errorHandlerName]: errorHandler,
+  }
+}
+
 module.exports = {
   createSymbiote,
   symbioteSecret,
+  withSideEffect,
+}
+
+if (process.env.NODE_ENV === 'test') {
+  module.exports.getSymbolCreator = getSymbolCreator
 }
 
 if (process.env.NODE_ENV === 'test') {
