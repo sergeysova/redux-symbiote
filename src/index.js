@@ -1,8 +1,12 @@
-const createSymbol = (name) => `@@redux-symbiote/${name}`
+const getSymbolCreator = () => typeof Symbol === 'function' ? Symbol : (name) => `@@redux-symbiote/${name}`
+
+const createSymbol = getSymbolCreator()
 
 const symbioteSecret = {
-  action: createSymbol('action function for actions list'),
+  getActionCreator: createSymbol('action function for actions list'),
 }
+
+const getActionCreatorDefault = (type) => (...args) => ({ type, payload: args })
 
 const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
   const handlersList = {}
@@ -16,14 +20,12 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
       const type = currentPath.join('/')
 
       if (typeof handler === 'function') {
-        actionsList[key] = (...args) => ({ type, payload: args })
+        const getActionCreator = handler[symbioteSecret.getActionCreator] || getActionCreatorDefault
+
+        actionsList[key] = getActionCreator(type)
         actionsList[key].toString = () => type
 
         handlersList[type] = handler
-      }
-      else if (handler && typeof handler[symbioteSecret.action] === 'function') {
-        actionsList[type] = handler[symbioteSecret.action]
-        handlersList[type] = handler[symbioteSecret.action]
       }
       else {
         actionsList[key] = traverseActions(rootConfig[key], currentPath)
@@ -53,4 +55,8 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 module.exports = {
   createSymbiote,
   symbioteSecret,
+}
+
+if (process.env.NODE_ENV === 'test') {
+  module.exports.getSymbolCreator = getSymbolCreator
 }
