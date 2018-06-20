@@ -1,6 +1,7 @@
 /* eslint-disable no-magic-numbers */
 import test from 'ava'
-import { createSymbiote, symbioteSecret, getSymbolCreator } from '../src/index'
+import symbioteSymbol from 'symbiote-symbol'
+import { createSymbiote } from '../src/index'
 
 
 test('createSymbiote return actions and reducer', (t) => {
@@ -10,9 +11,9 @@ test('createSymbiote return actions and reducer', (t) => {
   t.is(typeof result.reducer, 'function', 'reducer is not a function')
 })
 
-test('symbioteSecret is map', (t) => {
-  t.is(typeof symbioteSecret, 'object')
-  t.deepEqual(Object.keys(symbioteSecret), ['getActionCreator'])
+test('symbioteSymbol is map', (t) => {
+  t.is(typeof symbioteSymbol, 'object')
+  t.deepEqual(Object.keys(symbioteSymbol), ['getActionCreator'])
 })
 
 test('reducer return previous state', (t) => {
@@ -81,10 +82,10 @@ test('createSymbiote with extended action creator', (t) => {
   const handler1 = () => {}
   const handler2 = () => {}
 
-  handler1[symbioteSecret.getActionCreator] = type => () => testValue
-  handler2[symbioteSecret.getActionCreator] = type => () => type
+  handler1[symbioteSymbol.getActionCreator] = () => () => testValue
+  handler2[symbioteSymbol.getActionCreator] = (type) => () => type
 
-  const { actions, reducer } = createSymbiote({}, { handler1, handler2 }, 'test')
+  const { actions } = createSymbiote({}, { handler1, handler2 }, 'test')
 
   t.is(actions.handler1(), testValue)
   t.is(actions.handler2(), 'test/handler2')
@@ -194,14 +195,4 @@ test('supernested with prefix', (t) => {
   t.deepEqual(actions.a.b.c.d.e.g('bar'), { type: 'prefix/a/b/c/d/e/g', payload: ['bar'] }, 'nested action with state type')
   t.deepEqual(reducer(undefined, actions.a.b.c.d.e.g('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
   t.is(actions.a.b.c.d.e.g.toString(), 'prefix/a/b/c/d/e/g', '.toString() return correct type')
-})
-
-test('getSymbolCreator with difference environment', (t) => {
-  t.is(typeof getSymbolCreator()('test'), 'symbol')
-
-  const originalSymbol = Symbol
-
-  global.Symbol = undefined
-  t.is(getSymbolCreator()('test'), '@@redux-symbiote/test')
-  global.Symbol = originalSymbol
 })
