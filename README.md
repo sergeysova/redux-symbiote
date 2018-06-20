@@ -234,3 +234,28 @@ export const accountsReducer = handleActions({
   [actions.loading.finish]: (state, { payload: { accounts } }) => ({ ...state, accounts }),
 }, initialState)
 ```
+
+But we have some duplicate in action creators properties and reducer.
+
+Let's rewrite it to redux-symbiote:
+
+
+```js
+import { createSymbiote } from 'redux-symbiote'
+
+const initialState = {
+  error: null,
+  accounts: [],
+  loading: false,
+}
+
+export const { actions, reducer: accountsReducer } = createSymbiote(initialState, {
+  start: (state) => ({ ...state, loading: true }),
+  finish: (state, { accounts }) => ({ ...state, loading: false, accounts }),
+  failed: (state, { error }) => ({ ...state, loading: false, error }),
+}, 'accounts/loading')
+```
+
+Its all. `accounts/loading` is a optional namespace for actions types.
+
+To reduce noise around loading actions see at [`symbiote-fetching`](https://npmjs.com/symbiote-fetching)
