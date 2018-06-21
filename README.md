@@ -100,6 +100,7 @@ Object has optional properties:
 
 - `namespace` is `string` — set prefix for each action type
 - `defaultReducer` is `(previousState) -> newState` — called instead of return previous state
+- `separator` is `string` — change separator of nested action types (default `/`)
 
 #### ActionHandler##toString
 

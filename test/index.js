@@ -236,3 +236,35 @@ test('defaultReducer option do not break namespace', (t) => {
   t.deepEqual(reducer(undefined, { type: 'NAMESPACE/T/foo' }), 100)
   t.deepEqual(reducer(undefined, { type: 'NAMESPACE/T/bar/baz' }), 200)
 })
+
+test('separator', (t) => {
+  const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
+    foo: (state, value) => ({ ...state, value }),
+    bar: {
+      foo: (state, data) => ({ ...state, value: state.value + 1, data }),
+    },
+  }, { separator: '::' })
+
+  t.deepEqual(actions.foo(1), { type: 'foo', payload: [1] }, 'simple action type')
+  t.deepEqual(actions.bar.foo('bar'), { type: 'bar::foo', payload: ['bar'] }, 'nested action with state type')
+  t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' }, 'reduce simple action')
+  t.deepEqual(reducer(undefined, actions.bar.foo('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
+  t.is(actions.foo.toString(), 'foo', 'foo.toString() return correct type')
+  t.is(actions.bar.foo.toString(), 'bar::foo', 'bar.foo.toString() return correct type')
+})
+
+test('separator and namespace', (t) => {
+  const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
+    foo: (state, value) => ({ ...state, value }),
+    bar: {
+      foo: (state, data) => ({ ...state, value: state.value + 1, data }),
+    },
+  }, { separator: '::', namespace: 'ns' })
+
+  t.deepEqual(actions.foo(1), { type: 'ns::foo', payload: [1] }, 'simple action type')
+  t.deepEqual(actions.bar.foo('bar'), { type: 'ns::bar::foo', payload: ['bar'] }, 'nested action with state type')
+  t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' }, 'reduce simple action')
+  t.deepEqual(reducer(undefined, actions.bar.foo('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
+  t.is(actions.foo.toString(), 'ns::foo', 'foo.toString() return correct type')
+  t.is(actions.bar.foo.toString(), 'ns::bar::foo', 'bar.foo.toString() return correct type')
+})

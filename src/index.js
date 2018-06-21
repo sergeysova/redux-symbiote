@@ -3,11 +3,21 @@ const symbioteSymbols = require('symbiote-symbol')
 
 const getActionCreatorDefault = (type) => (...args) => ({ type, payload: args })
 
+const defaultOptions = {
+  namespace: undefined,
+  defaultReducer: undefined,
+  separator: '/',
+}
+
+/**
+ * @param {defaultOptions} options
+ * @return {defaultOptions}
+ */
 const createOptions = (options) => {
   if (typeof options === 'string') {
-    return { namespace: options }
+    return Object.assign({}, defaultOptions, { namespace: options })
   }
-  return options
+  return Object.assign({}, defaultOptions, options)
 }
 
 const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
@@ -20,7 +30,7 @@ const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
     Object.keys(rootConfig).forEach((key) => {
       const currentPath = rootPath.concat(key)
       const handler = rootConfig[key]
-      const type = currentPath.join('/')
+      const type = currentPath.join(options.separator)
 
       if (typeof handler === 'function') {
         const getActionCreator = handler[symbioteSymbols.getActionCreator]
