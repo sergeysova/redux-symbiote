@@ -37,16 +37,16 @@
   ],
   "homepage": "https://github.com/atomixinteractions/redux-symbiote#readme",
   "dependencies": {
-    "symbiote-symbol": "^0.1.0"
+    "symbiote-symbol": "^0.2.0"
   },
   "devDependencies": {
-    "@atomix/eslint-config": "^6.1.1",
+    "@atomix/eslint-config": "^6.3.0",
     "ava": "^0.25.0",
     "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "coveralls": "^3.0.0",
-    "eslint": "^4.18.1",
-    "nyc": "^11.4.1"
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "coveralls": "^3.0.1",
+    "eslint": "^4.19.1",
+    "nyc": "^12.0.2"
   }
 }
