@@ -119,7 +119,7 @@ const reducer = handleActions({
 
 `createSymbiote` returns object with `actions` and `reducer`.
 
-Created reducer already handle created actions. You don't need handle actions from symbiote.
+Created reducer already handles created actions. You don't need to handle actions from symbiote.
 
 ```js
 // accounts.js
@@ -139,7 +139,7 @@ export const reducer = combineReducers({
 
 ## Why?
 
-Redux recommends create constants, action creators and reducers separately.
+Redux recommends creating constants, action creators and reducers separately.
 
 https://redux.js.org/basics/
 
@@ -203,7 +203,7 @@ export function accountsReducer(state = initialState, action) {
 
 So much boilerplate.
 
-Let's see at [redux-actions](https://npmjs.com/redux-actions).
+Let's look at [redux-actions](https://npmjs.com/redux-actions).
 
 ```js
 import { createActions, handleActions, combineActions } from 'redux-actions'
@@ -256,6 +256,6 @@ export const { actions, reducer: accountsReducer } = createSymbiote(initialState
 }, 'accounts/loading')
 ```
 
-Its all. `accounts/loading` is a optional namespace for actions types.
+That's all. `accounts/loading` is an optional namespace for actions types.
 
-To reduce noise around loading actions see at [`symbiote-fetching`](https://npmjs.com/symbiote-fetching)
+To reduce noise around loading actions see [`symbiote-fetching`](https://npmjs.com/symbiote-fetching).
