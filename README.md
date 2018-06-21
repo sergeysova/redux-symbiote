@@ -27,7 +27,7 @@ export const { actions, reducer } = createSymbiote(initialState, {
 
 ## API
 
-### Create symbiot
+### Create symbiote
 
 ```js
 function createSymbiote(
@@ -37,7 +37,7 @@ function createSymbiote(
 )
 ```
 
-### Create action handler
+### Create action handlers + reducer
 
 ```js
 createSymbiote(initialState, {
