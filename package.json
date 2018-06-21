@@ -37,7 +37,7 @@
   ],
   "homepage": "https://github.com/atomixinteractions/redux-symbiote#readme",
   "dependencies": {
-    "symbiote-symbol": "^0.2.0"
+    "symbiote-symbol": "^1.1.0"
   },
   "devDependencies": {
     "@atomix/eslint-config": "^6.3.0",
