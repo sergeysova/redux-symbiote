@@ -222,6 +222,15 @@ test('defaultReducer option', (t) => {
   t.deepEqual(reducer(undefined, { type: 'UNKNOWN' }), 'CUSTOM')
 })
 
+test('defaultReducer receive previous state', (t) => {
+  const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
+    foo: () => 100,
+  }, { defaultReducer: (state) => state + 1 })
+
+  t.deepEqual(reducer(undefined, actions.foo(1)), 100)
+  t.deepEqual(reducer(900, { type: 'UNKNOWN' }), 901)
+})
+
 test('defaultReducer option do not break namespace', (t) => {
   const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
     foo: () => 100,
