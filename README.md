@@ -90,6 +90,17 @@ dispatch(actions.data.set('bar')) // { type: 'data/set', payload: ['bar'] }
 dispatch(actions.data.concat('foo ')) // { type: 'data/concat', payload: ['foo '] }
 ```
 
+#### Options
+
+Third parameter in `createSymbiote` is optional `string` or `object`.
+
+If `string` passed, symbiote converts it to `{ namespace: 'string' }`.
+
+Object has optional properties:
+
+- `namespace` is `string` — set prefix for each action type
+- `defaultReducer` is `(previousState) -> newState` — called instead of return previous state
+
 #### ActionHandler##toString
 
 You can use action as action type in classic reducer or in [`handleAction(s)`](https://redux-actions.js.org/docs/api/handleAction.html) in [`redux-actions`](https://npmjs.com/redux-actions)

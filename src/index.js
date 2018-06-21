@@ -3,8 +3,16 @@ const symbioteSymbols = require('symbiote-symbol')
 
 const getActionCreatorDefault = (type) => (...args) => ({ type, payload: args })
 
-const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
+const createOptions = (options) => {
+  if (typeof options === 'string') {
+    return { namespace: options }
+  }
+  return options
+}
+
+const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
   const handlersList = {}
+  const options = createOptions(namespaceOptions)
 
   const traverseActions = (rootConfig, rootPath = []) => {
     const actionsList = {}
@@ -33,7 +41,7 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
 
   const actionsList = traverseActions(
     actionsConfig,
-    actionTypePrefix ? [actionTypePrefix] : undefined
+    options.namespace ? [options.namespace] : undefined
   )
 
   return {
@@ -41,8 +49,12 @@ const createSymbiote = (initialState, actionsConfig, actionTypePrefix = '') => {
     reducer: (previousState = initialState, { type, payload: args = [] }) => {
       const handler = handlersList[type]
 
-      return handler
-        ? handler(previousState, ...args)
+      if (handler) {
+        return handler(previousState, ...args)
+      }
+
+      return options.defaultReducer
+        ? options.defaultReducer(previousState)
         : previousState
     },
   }

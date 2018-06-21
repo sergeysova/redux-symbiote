@@ -177,6 +177,22 @@ test('prefix', (t) => {
   t.is(actions.bar.foo.toString(), 'baz/bar/foo', 'bar.foo.toString() return correct type')
 })
 
+test('prefix as option namespace in object', (t) => {
+  const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
+    foo: (state, value) => ({ ...state, value }),
+    bar: {
+      foo: (state, data) => ({ ...state, value: state.value + 1, data }),
+    },
+  }, { namespace: 'baz' })
+
+  t.deepEqual(actions.foo(1), { type: 'baz/foo', payload: [1] }, 'simple action type')
+  t.deepEqual(actions.bar.foo('bar'), { type: 'baz/bar/foo', payload: ['bar'] }, 'nested action with state type')
+  t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' }, 'reduce simple action')
+  t.deepEqual(reducer(undefined, actions.bar.foo('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
+  t.is(actions.foo.toString(), 'baz/foo', 'foo.toString() return correct type')
+  t.is(actions.bar.foo.toString(), 'baz/bar/foo', 'bar.foo.toString() return correct type')
+})
+
 test('supernested with prefix', (t) => {
   const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
     a: {
@@ -195,4 +211,28 @@ test('supernested with prefix', (t) => {
   t.deepEqual(actions.a.b.c.d.e.g('bar'), { type: 'prefix/a/b/c/d/e/g', payload: ['bar'] }, 'nested action with state type')
   t.deepEqual(reducer(undefined, actions.a.b.c.d.e.g('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
   t.is(actions.a.b.c.d.e.g.toString(), 'prefix/a/b/c/d/e/g', '.toString() return correct type')
+})
+
+test('defaultReducer option', (t) => {
+  const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
+    foo: () => 100,
+  }, { defaultReducer: () => 'CUSTOM' })
+
+  t.deepEqual(reducer(undefined, actions.foo(1)), 100)
+  t.deepEqual(reducer(undefined, { type: 'UNKNOWN' }), 'CUSTOM')
+})
+
+test('defaultReducer option do not break namespace', (t) => {
+  const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
+    foo: () => 100,
+    bar: {
+      baz: () => 200,
+    },
+  }, { defaultReducer: () => 'CUSTOM', namespace: 'NAMESPACE/T' })
+
+  t.deepEqual(reducer(undefined, actions.foo()), 100)
+  t.deepEqual(reducer(undefined, actions.bar.baz()), 200)
+  t.deepEqual(reducer(undefined, { type: 'UNKNOWN' }), 'CUSTOM')
+  t.deepEqual(reducer(undefined, { type: 'NAMESPACE/T/foo' }), 100)
+  t.deepEqual(reducer(undefined, { type: 'NAMESPACE/T/bar/baz' }), 200)
 })
