@@ -7,7 +7,9 @@ type NamespaceOptions<S> = {
 type Reducer<S> = (state: S, action: Action) => S
 
 type ActionsConfig<S, A> = {
-    [P in keyof A]: ActionsConfig<S, A[P]> | ((state: S, ...payload: any[]) => S)
+    [P in keyof A]: A[P] extends Function
+        ? ((state: S, ...payload: any[]) => S)
+        : ActionsConfig<S, A[P]>
 }
 
 export type Action<P = any> = { type: string, payload?: P }
