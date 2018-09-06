@@ -56,7 +56,8 @@ const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
 
   return {
     actions: actionsList,
-    reducer: (previousState = initialState, { type, payload: args = [] }) => {
+    reducer: (previousState = initialState, action) => {
+      const { type, payload: args = [] } = action
       const handler = handlersList[type]
 
       if (handler) {
@@ -64,7 +65,7 @@ const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
       }
 
       return options.defaultReducer
-        ? options.defaultReducer(previousState)
+        ? options.defaultReducer(previousState, action)
         : previousState
     },
   }

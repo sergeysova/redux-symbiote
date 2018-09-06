@@ -222,6 +222,24 @@ test('defaultReducer option', (t) => {
   t.deepEqual(reducer(undefined, { type: 'UNKNOWN' }), 'CUSTOM')
 })
 
+test('defaultReducer receives prevState and action', (t) => {
+  const { actions, reducer } = createSymbiote(0, {
+    foo: () => 100,
+  }, { defaultReducer: (state, action) => action.payload.value })
+
+  t.deepEqual(reducer(undefined, actions.foo(1)), 100)
+  t.deepEqual(reducer(undefined, { type: 'UNKNOWN', payload: { value: 2 } }), 2)
+})
+
+test('defaultReducer receives original action', (t) => {
+  const { reducer } = createSymbiote(0, {
+    foo: () => 100,
+  }, { defaultReducer: (state, action) => action })
+  const customAction = { type: 'Some', value: 1 }
+
+  t.deepEqual(reducer(undefined, customAction), customAction)
+})
+
 test('defaultReducer receive previous state', (t) => {
   const { actions, reducer } = createSymbiote({ value: 0, data: 'foo' }, {
     foo: () => 100,
