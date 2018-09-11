@@ -10,6 +10,7 @@
     "report": "nyc report --reporter=text-lcov | coveralls",
     "prepublish": "npm run build"
   },
+  "types": "types",
   "files": [
     "lib",
     "src"
