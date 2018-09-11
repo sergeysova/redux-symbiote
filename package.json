@@ -4,7 +4,7 @@
   "description": "Write your actions and reducers without pain",
   "main": "lib/index.js",
   "scripts": {
-    "test": "eslint . && nyc ava",
+    "test": "eslint . && nyc ava && dtslint types",
     "build": "babel ./src -d ./lib",
     "coverage": "NODE_ENV=test nyc report --reporter=text-lcov",
     "report": "nyc report --reporter=text-lcov | coveralls",
@@ -46,6 +46,7 @@
     "@babel/preset-env": "^7.0.0",
     "ava": "^0.25.0",
     "coveralls": "^3.0.1",
+    "dtslint": "^0.3.0",
     "eslint": "^4.19.1",
     "nyc": "^12.0.2"
   }
