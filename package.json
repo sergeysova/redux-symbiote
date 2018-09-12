@@ -4,7 +4,8 @@
   "description": "Write your actions and reducers without pain",
   "main": "lib/index.js",
   "scripts": {
-    "test": "eslint . && nyc ava && dtslint types",
+    "test": "eslint . && nyc ava && npm run types",
+    "types": "rm -rf node_modules && npm i -g dtslint && dtslint types",
     "build": "babel ./src -d ./lib",
     "coverage": "NODE_ENV=test nyc report --reporter=text-lcov",
     "report": "nyc report --reporter=text-lcov | coveralls",
