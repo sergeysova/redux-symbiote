@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "eslint . && nyc ava && npm run types",
-    "types": "rm -rf node_modules && npm i -g dtslint && dtslint types",
+    "--types": "rm -rf node_modules && npm i -g dtslint && dtslint types",
+    "types": "dtslint types",
     "build": "babel ./src -d ./lib",
     "coverage": "NODE_ENV=test nyc report --reporter=text-lcov",
     "report": "nyc report --reporter=text-lcov | coveralls",
@@ -42,14 +43,14 @@
     "symbiote-symbol": "^1.1.0"
   },
   "devDependencies": {
-    "@atomix/eslint-config": "^6.3.0",
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
+    "@atomix/eslint-config": "^6.4.0",
+    "@babel/cli": "^7.1.0",
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
     "ava": "^0.25.0",
-    "coveralls": "^3.0.1",
+    "coveralls": "^3.0.2",
     "dtslint": "^0.3.0",
     "eslint": "^4.19.1",
-    "nyc": "^12.0.2"
+    "nyc": "^13.0.1"
   }
 }
