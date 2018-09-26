@@ -169,14 +169,16 @@ export function loadingStart() {
 
 export function loadingFailed(error) {
   return {
-    type: ACCOUNTS_LOADING_START,
-    error,
+    type: ACCOUNTS_LOADING_FAILED,
+    payload: {
+      error, 
+    },
   }
 }
 
 export function loadingFinish(accounts) {
   return {
-    type: ACCOUNTS_LOADING_START,
+    type: ACCOUNTS_LOADING_FINISH,
     payload: {
       accounts,
     },
@@ -199,13 +201,13 @@ export function accountsReducer(state = initialState, action) {
     case ACCOUNTS_LOADING_FAILED:
       return Object.assign({}, state, {
         loading: false,
-        error: action.error,
+        error: action.payload.error,
       })
 
     case ACCOUNTS_LOADING_FINISH:
       return Object.assign({}, state, {
         loading: false,
-        accounts: action.accounts,
+        accounts: action.payload.accounts,
       })
   }
 
