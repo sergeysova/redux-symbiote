@@ -15,7 +15,8 @@
   "types": "types",
   "files": [
     "lib",
-    "src"
+    "src",
+    "types"
   ],
   "repository": {
     "type": "git",
