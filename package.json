@@ -4,7 +4,7 @@
   "description": "Write your actions and reducers without pain",
   "main": "lib/index.js",
   "scripts": {
-    "test": "eslint . && nyc ava && npm run types",
+    "test": "eslint . && nyc ava",
     "--types": "rm -rf node_modules && npm i -g dtslint && dtslint types",
     "types": "dtslint types",
     "build": "babel ./src -d ./lib",

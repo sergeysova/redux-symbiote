@@ -8,8 +8,10 @@ node_js:
 sudo: false
 
 script:
-  - npm i -g dtslint
   - npm test
+  - npm i -g dtslint
+  - rm -rf node_modules
+  - npm run types
 
 after_success:
   - npm run report
