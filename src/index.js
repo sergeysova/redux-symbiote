@@ -1,7 +1,17 @@
 const symbioteSymbols = require('symbiote-symbol')
 
 
-const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
+module.exports = {
+  createSymbiote,
+}
+
+/**
+ * @param {{}} initialState
+ * @param {{}} actionsConfig
+ * @param {defaultOptions | string} namespaceOptions
+ * @returns {{ actions: {}, reducer: Function }}
+ */
+function createSymbiote(initialState, actionsConfig, namespaceOptions = '') {
   const builder = new SymbioteBuilder({
     state: initialState,
     options: createOptions(namespaceOptions),
@@ -14,7 +24,7 @@ const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
  * @param {defaultOptions | string} options
  * @return {defaultOptions}
  */
-const createOptions = (options) => {
+function createOptions(options) {
   if (typeof options === 'string') {
     return Object.assign({}, defaultOptions, {
       namespace: options,
@@ -28,9 +38,9 @@ const defaultOptions = {
   namespace: undefined,
   /** @type {Function} */
   defaultReducer: undefined,
+  /** @type {string} */
   separator: '/',
 }
-
 
 class SymbioteBuilder {
   constructor({ state, options }) {
@@ -62,7 +72,7 @@ class SymbioteBuilder {
         const currentHandler = currentHandlerOrScope
 
         actionsMap[key] = makeActionCreatorFor(currentType, currentHandler)
-        this.saveReducerFor(currentType, currentHandler)
+        this.saveHandlerAsReducerFor(currentType, currentHandler)
       }
       else if (isScope(currentHandlerOrScope)) {
         actionsMap[key] = this.createActionsForScopeOfHandlers(currentHandlerOrScope, currentPath)
@@ -79,7 +89,7 @@ class SymbioteBuilder {
     return path.join(this.options.separator)
   }
 
-  saveReducerFor(type, handler) {
+  saveHandlerAsReducerFor(type, handler) {
     this.reducers[type] = handler
   }
 
@@ -118,19 +128,16 @@ function isScope(scope) {
   return !Array.isArray(scope) && scope !== null && typeof scope === 'object'
 }
 
-const getActionCreatorDefault = (type) => (...args) => ({
+const createDefaultActionCreator = (type) => (...args) => ({
   type,
   payload: args,
 })
 
 function makeActionCreatorFor(type, handler) {
-  const createActionCreator = handler[symbioteSymbols.getActionCreator] || getActionCreatorDefault
+  const createActionCreator =
+    handler[symbioteSymbols.getActionCreator] || createDefaultActionCreator
   const actionCreator = createActionCreator(type)
 
   actionCreator.toString = () => type
   return actionCreator
-}
-
-module.exports = {
-  createSymbiote,
 }
