@@ -2,5 +2,9 @@
   "extends": "@atomix/eslint-config",
   "env": {
     "browser": true
+  },
+  "rules": {
+    "no-use-before-define": "off",
+    "no-param-reassign": "off"
   }
 }

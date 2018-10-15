@@ -1,74 +1,134 @@
 const symbioteSymbols = require('symbiote-symbol')
 
 
-const getActionCreatorDefault = (type) => (...args) => ({ type, payload: args })
+const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
+  const builder = new SymbioteBuilder({
+    state: initialState,
+    options: createOptions(namespaceOptions),
+  })
 
-const defaultOptions = {
-  namespace: undefined,
-  defaultReducer: undefined,
-  separator: '/',
+  return builder.createSymbioteFor(actionsConfig)
 }
 
 /**
- * @param {defaultOptions} options
+ * @param {defaultOptions | string} options
  * @return {defaultOptions}
  */
 const createOptions = (options) => {
   if (typeof options === 'string') {
-    return Object.assign({}, defaultOptions, { namespace: options })
+    return Object.assign({}, defaultOptions, {
+      namespace: options,
+    })
   }
   return Object.assign({}, defaultOptions, options)
 }
 
-const createSymbiote = (initialState, actionsConfig, namespaceOptions = '') => {
-  const handlersList = {}
-  const options = createOptions(namespaceOptions)
+const defaultOptions = {
+  /** @type {string} */
+  namespace: undefined,
+  /** @type {Function} */
+  defaultReducer: undefined,
+  separator: '/',
+}
 
-  const traverseActions = (rootConfig, rootPath = []) => {
-    const actionsList = {}
 
-    Object.keys(rootConfig).forEach((key) => {
-      const currentPath = rootPath.concat(key)
-      const handler = rootConfig[key]
-      const type = currentPath.join(options.separator)
+class SymbioteBuilder {
+  constructor({ state, options }) {
+    this.initialReducerState = state
+    this.options = options
+    this.actions = {}
+    this.reducers = {}
+    this.namespacePath = options.namespace ? [options.namespace] : []
+  }
 
-      if (typeof handler === 'function') {
-        const getActionCreator = handler[symbioteSymbols.getActionCreator]
-          || getActionCreatorDefault
+  createSymbioteFor(actions) {
+    const actionCreators = this.createActionsForScopeOfHandlers(actions, this.namespacePath)
 
-        actionsList[key] = getActionCreator(type)
-        actionsList[key].toString = () => type
+    return {
+      actions: actionCreators,
+      reducer: this.createReducer(),
+    }
+  }
 
-        handlersList[type] = handler
+  createActionsForScopeOfHandlers(reducersMap, parentPath) {
+    const actionsMap = {}
+
+    Object.keys(reducersMap).forEach((key) => {
+      const currentPath = createPathFor(parentPath, key)
+      const currentHandlerOrScope = reducersMap[key]
+      const currentType = this.createTypeFromPath(currentPath)
+
+      if (isHandler(currentHandlerOrScope)) {
+        const currentHandler = currentHandlerOrScope
+
+        actionsMap[key] = makeActionCreatorFor(currentType, currentHandler)
+        this.saveReducerFor(currentType, currentHandler)
+      }
+      else if (isScope(currentHandlerOrScope)) {
+        actionsMap[key] = this.createActionsForScopeOfHandlers(currentHandlerOrScope, currentPath)
       }
       else {
-        actionsList[key] = traverseActions(rootConfig[key], currentPath)
+        throw new TypeError('createSymbiote supports only function handlers and object scopes in actions config')
       }
     })
 
-    return actionsList
+    return actionsMap
   }
 
-  const actionsList = traverseActions(
-    actionsConfig,
-    options.namespace ? [options.namespace] : undefined
-  )
+  createTypeFromPath(path) {
+    return path.join(this.options.separator)
+  }
 
-  return {
-    actions: actionsList,
-    reducer: (previousState = initialState, action) => {
-      const { type, payload: args = [] } = action
-      const handler = handlersList[type]
+  saveReducerFor(type, handler) {
+    this.reducers[type] = handler
+  }
 
-      if (handler) {
-        return handler(previousState, ...args)
+  createReducer() {
+    return (previousState = this.initialReducerState, action) => {
+      const reducer = this.findReducerFor(action.type)
+
+      if (reducer) {
+        return reducer(previousState, action)
       }
 
-      return options.defaultReducer
-        ? options.defaultReducer(previousState, action)
-        : previousState
-    },
+      return previousState
+    }
   }
+
+  findReducerFor(type) {
+    const expectedReducer = this.reducers[type]
+
+    if (expectedReducer) {
+      return (state, { payload = [] } = {}) => expectedReducer(state, ...payload)
+    }
+
+    return this.options.defaultReducer
+  }
+}
+
+function createPathFor(path, ...chunks) {
+  return path.concat(...chunks)
+}
+
+function isHandler(handler) {
+  return typeof handler === 'function'
+}
+
+function isScope(scope) {
+  return !Array.isArray(scope) && scope !== null && typeof scope === 'object'
+}
+
+const getActionCreatorDefault = (type) => (...args) => ({
+  type,
+  payload: args,
+})
+
+function makeActionCreatorFor(type, handler) {
+  const createActionCreator = handler[symbioteSymbols.getActionCreator] || getActionCreatorDefault
+  const actionCreator = createActionCreator(type)
+
+  actionCreator.toString = () => type
+  return actionCreator
 }
 
 module.exports = {
