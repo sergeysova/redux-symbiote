@@ -14,7 +14,7 @@ const initialState = {
   loading: false,
 }
 
-export const { actions, reducer } = createSymbiote(initialState, {
+const symbiotes = {
   accounts: {
     loading: {
       start: (state) => ({ ...state, loading: true }),
@@ -22,7 +22,17 @@ export const { actions, reducer } = createSymbiote(initialState, {
       finish: (state, accounts) => ({ ...state, loading: false, accounts }),
     },
   },
-})
+}
+
+export const { actions, reducer } = createSymbiote(initialState, symbiotes)
+```
+
+Also you can use CommonJS:
+
+```js
+const { createSymbiote } = require('redux-symbiote')
+
+// ...
 ```
 
 ## API
@@ -32,7 +42,7 @@ export const { actions, reducer } = createSymbiote(initialState, {
 ```js
 function createSymbiote(
   initialState,
-  actionsConfig,
+  symbiotes,
   ?actionTypePrefix = ''
 )
 ```
@@ -41,9 +51,9 @@ function createSymbiote(
 
 ```js
 createSymbiote(initialState, {
-  actionType: actionHandler,
+  actionType: actionReducer,
   nestedType: {
-    actionType: nestedActionHandler,
+    actionType: nestedActionReducer,
   }
 })
 ```
@@ -51,13 +61,17 @@ createSymbiote(initialState, {
 Example:
 
 ```js
-export const { actions, reducer } = createSymbiote({ value: 1, data: 'another' }, {
+const initialState = { value: 1, data: 'another' }
+
+const symbiotes = {
   increment: (state) => ({ ...state, value: state.value + 1 }),
   decrement: (state) => ({ ...state, value: state.value - 1 }),
   setValue: (state, value) => ({ ...state, value }),
   setData: (state, data) => ({ ...state, data }),
   concatData: (state, data) => ({ ...state, data: data + state.data }),
-})
+}
+
+export const { actions, reducer } = createSymbiote(initialState, symbiotes)
 
 dispatch(actions.increment()) // { type: 'increment' }
 dispatch(actions.setValue(4)) // { type: 'setValue', payload: [4] }
@@ -68,12 +82,14 @@ dispatch(actions.concatData('foo ')) // { type: 'concatData', payload: ['foo '] 
 // State here { value: 3, data: 'foo bar' }
 ```
 
-When you call `actions.setValue` symbiote calls your action handler with previousState and all arguments.
+When you call `actions.setValue` symbiote calls your action handler with previousState and all arguments spreaded after state.
 
 #### Nested example
 
 ```js
-export const { actions, reducer } = createSymbiote({ value: 1, data: 'another' }, {
+const initialState = { value: 1, data: 'another' }
+
+const symbiotes = {
   value: {
     increment: (state) => ({ ...state, value: state.value + 1 }),
     decrement: (state) => ({ ...state, value: state.value - 1 }),
@@ -82,7 +98,9 @@ export const { actions, reducer } = createSymbiote({ value: 1, data: 'another' }
     set: (state, data) => ({ ...state, data }),
     concat: (state, data) => ({ ...state, data: data + state.data }),
   },
-})
+}
+
+export const { actions, reducer } = createSymbiote(initialState, symbiotes)
 
 dispatch(actions.value.increment()) // { type: 'value/increment' }
 dispatch(actions.value.decrement()) // { type: 'value/decrement' }
@@ -110,13 +128,17 @@ You can use action as action type in classic reducer or in [`handleAction(s)`](h
 import { handleActions } from 'redux-actions'
 import { createSymbiote } from 'redux-symbiote'
 
-const { actions } = createSymbiote(initialState, {
+const initialState = { /* ... */ }
+
+const symbiotes = {
   foo: {
     bar: {
       baz: (state, arg1, arg2) => ({ ...state, data: arg1, atad: arg2 }),
     },
   },
-})
+}
+
+const { actions } = createSymbiote(initialState, symbiotes)
 
 const reducer = handleActions({
   [actions.foo.bar.baz]: (state, { payload: [arg1, arg2] }) => ({
@@ -135,9 +157,7 @@ Created reducer already handles created actions. You don't need to handle action
 
 ```js
 // accounts.js
-export const { actions, reducer } = createSymbiote(initialState, {
-  // actions map
-})
+export const { actions, reducer } = createSymbiote(initialState, symbiotes, options)
 
 // reducer.js
 import { reducer as accounts } from '../accounts/symbiote'
@@ -171,7 +191,7 @@ export function loadingFailed(error) {
   return {
     type: ACCOUNTS_LOADING_FAILED,
     payload: {
-      error, 
+      error,
     },
   }
 }
@@ -263,13 +283,16 @@ const initialState = {
   loading: false,
 }
 
-export const { actions, reducer: accountsReducer } = createSymbiote(initialState, {
+const symbiotes = {
   start: (state) => ({ ...state, loading: true }),
   finish: (state, { accounts }) => ({ ...state, loading: false, accounts }),
   failed: (state, { error }) => ({ ...state, loading: false, error }),
-}, 'accounts/loading')
+}
+
+export const { actions, reducer: accountsReducer } =
+  createSymbiote(initialState, symbiotes, 'accounts/loading')
 ```
 
 That's all. `accounts/loading` is an optional namespace for actions types.
 
-To reduce noise around loading actions see [`symbiote-fetching`](https://npmjs.com/symbiote-fetching).
+To reduce noise around loading actions try [`symbiote-fetching`](https://npmjs.com/symbiote-fetching).
