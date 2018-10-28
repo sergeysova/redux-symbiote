@@ -35,6 +35,10 @@ const { createSymbiote } = require('redux-symbiote')
 // ...
 ```
 
+## Demo
+
+[![Edit Redux Symbiote Todos](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/3x7n34n336?module=%2Fsrc%2Fstore%2Fsymbiotes%2Ftodos.js)
+
 ## API
 
 ### Create symbiote
