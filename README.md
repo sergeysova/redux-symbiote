@@ -47,7 +47,7 @@ const { createSymbiote } = require('redux-symbiote')
 function createSymbiote(
   initialState,
   symbiotes,
-  ?actionTypePrefix = ''
+  ?namespace = ''
 )
 ```
 
