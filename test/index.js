@@ -16,11 +16,37 @@ test('symbioteSymbol is map', (t) => {
   t.deepEqual(Object.keys(symbioteSymbol), ['getActionCreator'])
 })
 
+test('createSymbiote throws on not function symbiotes', (t) => {
+  t.throws(() => {
+    createSymbiote({}, { foo: 1 })
+  }, /createSymbiote supports only function handlers/)
+  t.throws(() => {
+    createSymbiote({}, { foo: true })
+  }, /createSymbiote supports only function handlers/)
+  t.throws(() => {
+    createSymbiote({}, { foo: 'foo' })
+  }, /createSymbiote supports only function handlers/)
+  t.throws(() => {
+    createSymbiote({}, { foo: Symbol('foo') })
+  }, /createSymbiote supports only function handlers/)
+  t.throws(() => {
+    createSymbiote({}, { foo: null })
+  }, /createSymbiote supports only function handlers/)
+})
+
 test('reducer return previous state', (t) => {
   const exampleState = { foo: 1 }
   const { reducer } = createSymbiote({}, {})
 
   t.is(reducer(exampleState, {}), exampleState)
+})
+
+test('reducer throws if passed no action', (t) => {
+  const { reducer } = createSymbiote({}, {})
+
+  t.throws(() => {
+    reducer({ state: 1 }, undefined)
+  }, /Action should be passed/)
 })
 
 test('reducer return initial state', (t) => {
@@ -35,7 +61,7 @@ test('simple actions returns type and payload', (t) => {
     foo: (arg) => ({ arg }),
   })
 
-  t.deepEqual(actions.foo(1), { type: 'foo', payload: [1] })
+  t.deepEqual(actions.foo(1), { type: 'foo', payload: 1, 'symbiote-payload': [1] })
 })
 
 test('actions with state returns type and payload', (t) => {
@@ -43,7 +69,7 @@ test('actions with state returns type and payload', (t) => {
     bar: (arg) => (state) => ({ arg, state }),
   })
 
-  t.deepEqual(actions.bar(1), { type: 'bar', payload: [1] })
+  t.deepEqual(actions.bar(1), { type: 'bar', payload: 1, 'symbiote-payload': [1] })
   t.is(actions.bar.toString(), 'bar', '.toString() return correct type')
 })
 
@@ -54,7 +80,7 @@ test('nested actions returns type and payload', (t) => {
     },
   })
 
-  t.deepEqual(actions.bar.foo(1), { type: 'bar/foo', payload: [1] })
+  t.deepEqual(actions.bar.foo(1), { type: 'bar/foo', payload: 1, 'symbiote-payload': [1] })
   t.is(actions.bar.foo.toString(), 'bar/foo', '.toString() return correct type')
 })
 
@@ -65,7 +91,7 @@ test('nested actions with state returns type and payload', (t) => {
     },
   })
 
-  t.deepEqual(actions.foo.bar(1), { type: 'foo/bar', payload: [1] })
+  t.deepEqual(actions.foo.bar(1), { type: 'foo/bar', payload: 1, 'symbiote-payload': [1] })
   t.is(actions.foo.bar.toString(), 'foo/bar', '.toString() return correct type')
 })
 
@@ -169,8 +195,8 @@ test('prefix', (t) => {
     },
   }, 'baz')
 
-  t.deepEqual(actions.foo(1), { type: 'baz/foo', payload: [1] }, 'simple action type')
-  t.deepEqual(actions.bar.foo('bar'), { type: 'baz/bar/foo', payload: ['bar'] }, 'nested action with state type')
+  t.deepEqual(actions.foo(1), { type: 'baz/foo', payload: 1, 'symbiote-payload': [1] }, 'simple action type')
+  t.deepEqual(actions.bar.foo('bar'), { type: 'baz/bar/foo', payload: 'bar', 'symbiote-payload': ['bar'] }, 'nested action with state type')
   t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' }, 'reduce simple action')
   t.deepEqual(reducer(undefined, actions.bar.foo('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
   t.is(actions.foo.toString(), 'baz/foo', 'foo.toString() return correct type')
@@ -185,8 +211,8 @@ test('prefix as option namespace in object', (t) => {
     },
   }, { namespace: 'baz' })
 
-  t.deepEqual(actions.foo(1), { type: 'baz/foo', payload: [1] }, 'simple action type')
-  t.deepEqual(actions.bar.foo('bar'), { type: 'baz/bar/foo', payload: ['bar'] }, 'nested action with state type')
+  t.deepEqual(actions.foo(1), { type: 'baz/foo', payload: 1, 'symbiote-payload': [1] }, 'simple action type')
+  t.deepEqual(actions.bar.foo('bar'), { type: 'baz/bar/foo', payload: 'bar', 'symbiote-payload': ['bar'] }, 'nested action with state type')
   t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' }, 'reduce simple action')
   t.deepEqual(reducer(undefined, actions.bar.foo('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
   t.is(actions.foo.toString(), 'baz/foo', 'foo.toString() return correct type')
@@ -208,7 +234,7 @@ test('supernested with prefix', (t) => {
     },
   }, 'prefix')
 
-  t.deepEqual(actions.a.b.c.d.e.g('bar'), { type: 'prefix/a/b/c/d/e/g', payload: ['bar'] }, 'nested action with state type')
+  t.deepEqual(actions.a.b.c.d.e.g('bar'), { type: 'prefix/a/b/c/d/e/g', payload: 'bar', 'symbiote-payload': ['bar'] }, 'nested action with state type')
   t.deepEqual(reducer(undefined, actions.a.b.c.d.e.g('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
   t.is(actions.a.b.c.d.e.g.toString(), 'prefix/a/b/c/d/e/g', '.toString() return correct type')
 })
@@ -272,8 +298,8 @@ test('separator', (t) => {
     },
   }, { separator: '::' })
 
-  t.deepEqual(actions.foo(1), { type: 'foo', payload: [1] }, 'simple action type')
-  t.deepEqual(actions.bar.foo('bar'), { type: 'bar::foo', payload: ['bar'] }, 'nested action with state type')
+  t.deepEqual(actions.foo(1), { type: 'foo', payload: 1, 'symbiote-payload': [1] }, 'simple action type')
+  t.deepEqual(actions.bar.foo('bar'), { type: 'bar::foo', payload: 'bar', 'symbiote-payload': ['bar'] }, 'nested action with state type')
   t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' }, 'reduce simple action')
   t.deepEqual(reducer(undefined, actions.bar.foo('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
   t.is(actions.foo.toString(), 'foo', 'foo.toString() return correct type')
@@ -288,10 +314,26 @@ test('separator and namespace', (t) => {
     },
   }, { separator: '::', namespace: 'ns' })
 
-  t.deepEqual(actions.foo(1), { type: 'ns::foo', payload: [1] }, 'simple action type')
-  t.deepEqual(actions.bar.foo('bar'), { type: 'ns::bar::foo', payload: ['bar'] }, 'nested action with state type')
-  t.deepEqual(reducer(undefined, actions.foo(1)), { value: 1, data: 'foo' }, 'reduce simple action')
-  t.deepEqual(reducer(undefined, actions.bar.foo('bar')), { value: 1, data: 'bar' }, 'reduce nested action with state')
+  t.deepEqual(
+    actions.foo(1),
+    { type: 'ns::foo', payload: 1, 'symbiote-payload': [1] },
+    'simple action type'
+  )
+  t.deepEqual(
+    actions.bar.foo('bar'),
+    { type: 'ns::bar::foo', payload: 'bar', 'symbiote-payload': ['bar'] },
+    'nested action with state type'
+  )
+  t.deepEqual(
+    reducer(undefined, actions.foo(1)),
+    { value: 1, data: 'foo' },
+    'reduce simple action'
+  )
+  t.deepEqual(
+    reducer(undefined, actions.bar.foo('bar')),
+    { value: 1, data: 'bar' },
+    'reduce nested action with state'
+  )
   t.is(actions.foo.toString(), 'ns::foo', 'foo.toString() return correct type')
   t.is(actions.bar.foo.toString(), 'ns::bar::foo', 'bar.foo.toString() return correct type')
 })

@@ -95,6 +95,7 @@ class SymbioteBuilder {
 
   createReducer() {
     return (previousState = this.initialReducerState, action) => {
+      if (!action) throw new TypeError('Action should be passed')
       const reducer = this.findReducerFor(action.type)
 
       if (reducer) {
@@ -109,7 +110,9 @@ class SymbioteBuilder {
     const expectedReducer = this.reducers[type]
 
     if (expectedReducer) {
-      return (state, { payload = [] } = {}) => expectedReducer(state, ...payload)
+      return (state, { 'symbiote-payload': payload = [] }) => (
+        expectedReducer(state, ...payload)
+      )
     }
 
     return this.options.defaultReducer
@@ -130,7 +133,8 @@ function isScope(scope) {
 
 const createDefaultActionCreator = (type) => (...args) => ({
   type,
-  payload: args,
+  payload: args[0],
+  'symbiote-payload': args,
 })
 
 function makeActionCreatorFor(type, handler) {
