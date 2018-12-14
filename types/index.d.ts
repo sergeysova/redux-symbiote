@@ -2,7 +2,7 @@
 
 export interface NamespaceOptions<State> {
 	namespace?: string;
-	defaultReducer?: (prevState: State) => State;
+	defaultReducer?: (prevState: State, action: Action) => State;
 	separator?: string;
 }
 
