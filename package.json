@@ -1,6 +1,6 @@
 {
   "name": "redux-symbiote",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Write your actions and reducers without pain",
   "main": "lib/index.js",
   "scripts": {
