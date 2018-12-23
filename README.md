@@ -1,4 +1,5 @@
 # redux-symbiote [![Build Status](https://travis-ci.org/sergeysova/redux-symbiote.svg?branch=master)](https://travis-ci.org/atomixinteractions/redux-symbiote) [![Coverage Status](https://coveralls.io/repos/github/atomixinteractions/redux-symbiote/badge.svg?branch=master)](https://coveralls.io/github/atomixinteractions/redux-symbiote?branch=master)
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors)
 
 Write your actions and reducers without pain
 
@@ -300,3 +301,15 @@ export const { actions, reducer: accountsReducer } =
 That's all. `accounts/loading` is an optional namespace for actions types.
 
 To reduce noise around loading actions try [`symbiote-fetching`](https://npmjs.com/symbiote-fetching).
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+| [<img src="https://avatars0.githubusercontent.com/u/5620073?v=4" width="100px;"/><br /><sub><b>Sergey Sova</b></sub>](https://sergeysova.com)<br />[📖](https://github.com/sergeysova/redux-symbiote/commits?author=sergeysova "Documentation") [💻](https://github.com/sergeysova/redux-symbiote/commits?author=sergeysova "Code") [💡](#example-sergeysova "Examples") [🤔](#ideas-sergeysova "Ideas, Planning, & Feedback") [⚠️](https://github.com/sergeysova/redux-symbiote/commits?author=sergeysova "Tests") | [<img src="https://avatars0.githubusercontent.com/u/27290320?v=4" width="100px;"/><br /><sub><b>Arutyunyan Artyom</b></sub>](https://t.me/artalar)<br />[👀](#review-artalar "Reviewed Pull Requests") [🤔](#ideas-artalar "Ideas, Planning, & Feedback") [🐛](https://github.com/sergeysova/redux-symbiote/issues?q=author%3Aartalar "Bug reports") [💻](https://github.com/sergeysova/redux-symbiote/commits?author=artalar "Code") | [<img src="https://avatars3.githubusercontent.com/u/26767722?v=4" width="100px;"/><br /><sub><b>Igor Kamyshev</b></sub>](https://kamyshev.me)<br />[📦](#platform-igorkamyshev "Packaging/porting to new platform") [⚠️](https://github.com/sergeysova/redux-symbiote/commits?author=igorkamyshev "Tests") | [<img src="https://avatars2.githubusercontent.com/u/10822601?v=4" width="100px;"/><br /><sub><b>Ilya</b></sub>](https://github.com/ilyaagarkov)<br />[🐛](https://github.com/sergeysova/redux-symbiote/issues?q=author%3Ailyaagarkov "Bug reports") | [<img src="https://avatars2.githubusercontent.com/u/13759065?v=4" width="100px;"/><br /><sub><b>Ivanov Vadim</b></sub>](https://github.com/ivanov-v)<br />[📖](https://github.com/sergeysova/redux-symbiote/commits?author=ivanov-v "Documentation") | [<img src="https://avatars0.githubusercontent.com/u/16399895?v=4" width="100px;"/><br /><sub><b>Аnton Krivokhizhin</b></sub>](https://github.com/antonkri97)<br />[📦](#platform-antonkri97 "Packaging/porting to new platform") [🚇](#infra-antonkri97 "Infrastructure (Hosting, Build-Tools, etc)") |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
