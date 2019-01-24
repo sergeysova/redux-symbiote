@@ -1,4 +1,5 @@
 const symbioteSymbols = require('symbiote-symbol')
+const nanoid = require('nanoid')
 
 
 module.exports = {
@@ -11,7 +12,7 @@ module.exports = {
  * @param {defaultOptions | string} namespaceOptions
  * @returns {{ actions: {}, reducer: Function }}
  */
-function createSymbiote(initialState, actionsConfig, namespaceOptions = '') {
+function createSymbiote(initialState, actionsConfig, namespaceOptions = nanoid()) {
   const builder = new SymbioteBuilder({
     state: initialState,
     options: createOptions(namespaceOptions),
