@@ -61,7 +61,11 @@ test('simple actions returns type and payload', (t) => {
     foo: (arg) => ({ arg }),
   })
 
-  t.deepEqual(actions.foo(1), { type: 'foo', payload: 1, 'symbiote-payload': [1] })
+  const action = actions.foo(1)
+
+  t.is(action.payload, 1)
+  t.deepEqual(action['symbiote-payload'], [1])
+  t.true(action.type.endsWith('foo'))
 })
 
 test('actions with state returns type and payload', (t) => {
@@ -69,8 +73,13 @@ test('actions with state returns type and payload', (t) => {
     bar: (arg) => (state) => ({ arg, state }),
   })
 
-  t.deepEqual(actions.bar(1), { type: 'bar', payload: 1, 'symbiote-payload': [1] })
-  t.is(actions.bar.toString(), 'bar', '.toString() return correct type')
+  const action = actions.bar(1)
+
+  t.is(action.payload, 1)
+  t.deepEqual(action['symbiote-payload'], [1])
+  t.true(action.type.endsWith('bar'))
+
+  t.true(actions.bar.toString().endsWith('bar'), '.toString() return correct type')
 })
 
 test('nested actions returns type and payload', (t) => {
@@ -80,8 +89,13 @@ test('nested actions returns type and payload', (t) => {
     },
   })
 
-  t.deepEqual(actions.bar.foo(1), { type: 'bar/foo', payload: 1, 'symbiote-payload': [1] })
-  t.is(actions.bar.foo.toString(), 'bar/foo', '.toString() return correct type')
+  const action = actions.bar.foo(1)
+
+  t.true(action.type.endsWith('bar/foo'))
+  t.is(action.payload, 1)
+  t.deepEqual(action['symbiote-payload'], [1])
+
+  t.true(actions.bar.foo.toString().endsWith('bar/foo'), '.toString() return correct type')
 })
 
 test('nested actions with state returns type and payload', (t) => {
@@ -91,8 +105,13 @@ test('nested actions with state returns type and payload', (t) => {
     },
   })
 
-  t.deepEqual(actions.foo.bar(1), { type: 'foo/bar', payload: 1, 'symbiote-payload': [1] })
-  t.is(actions.foo.bar.toString(), 'foo/bar', '.toString() return correct type')
+  const action = actions.foo.bar(1)
+
+  t.true(action.type.endsWith('foo/bar'))
+  t.is(action.payload, 1)
+  t.deepEqual(action['symbiote-payload'], [1])
+
+  t.true(actions.foo.bar.toString().endsWith('foo/bar'), '.toString() return correct type')
 })
 
 test('reducer return action resul', (t) => {

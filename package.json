@@ -41,6 +41,7 @@
   ],
   "homepage": "https://github.com/sergeysova/redux-symbiote#readme",
   "dependencies": {
+    "nanoid": "^2.0.1",
     "symbiote-symbol": "^1.1.0"
   },
   "devDependencies": {
