@@ -62,7 +62,7 @@
   "homepage": "https://github.com/sergeysova/redux-symbiote#readme",
   "dependencies": {
     "nanoid": "^2.0.1",
-    "symbiote-symbol": "^2.0.0"
+    "symbiote-symbol": "^3.0.0"
   },
   "devDependencies": {
     "@atomix/eslint-config": "^7.0.0-next.1",

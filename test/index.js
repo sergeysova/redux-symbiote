@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers */
 import test from "ava"
-import * as symbioteSymbol from "symbiote-symbol"
+import symbioteSymbol from "symbiote-symbol"
 import { createSymbiote } from "../src/index"
 
 test("createSymbiote return actions and reducer", (t) => {
