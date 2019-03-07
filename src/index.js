@@ -1,6 +1,5 @@
-const symbioteSymbols = require('symbiote-symbol')
-const nanoid = require('nanoid')
-
+const symbioteSymbols = require("symbiote-symbol")
+const nanoid = require("nanoid")
 
 module.exports = {
   createSymbiote,
@@ -12,7 +11,11 @@ module.exports = {
  * @param {defaultOptions | string} namespaceOptions
  * @returns {{ actions: {}, reducer: Function }}
  */
-function createSymbiote(initialState, actionsConfig, namespaceOptions = nanoid()) {
+function createSymbiote(
+  initialState,
+  actionsConfig,
+  namespaceOptions = nanoid(),
+) {
   const builder = new SymbioteBuilder({
     state: initialState,
     options: createOptions(namespaceOptions),
@@ -26,7 +29,7 @@ function createSymbiote(initialState, actionsConfig, namespaceOptions = nanoid()
  * @return {defaultOptions}
  */
 function createOptions(options) {
-  if (typeof options === 'string') {
+  if (typeof options === "string") {
     return Object.assign({}, defaultOptions, {
       namespace: options,
     })
@@ -40,7 +43,7 @@ const defaultOptions = {
   /** @type {Function} */
   defaultReducer: undefined,
   /** @type {string} */
-  separator: '/',
+  separator: "/",
 }
 
 class SymbioteBuilder {
@@ -53,7 +56,10 @@ class SymbioteBuilder {
   }
 
   createSymbioteFor(actions) {
-    const actionCreators = this.createActionsForScopeOfHandlers(actions, this.namespacePath)
+    const actionCreators = this.createActionsForScopeOfHandlers(
+      actions,
+      this.namespacePath,
+    )
 
     return {
       actions: actionCreators,
@@ -74,12 +80,15 @@ class SymbioteBuilder {
 
         actionsMap[key] = makeActionCreatorFor(currentType, currentHandler)
         this.saveHandlerAsReducerFor(currentType, currentHandler)
-      }
-      else if (isScope(currentHandlerOrScope)) {
-        actionsMap[key] = this.createActionsForScopeOfHandlers(currentHandlerOrScope, currentPath)
-      }
-      else {
-        throw new TypeError('createSymbiote supports only function handlers and object scopes in actions config')
+      } else if (isScope(currentHandlerOrScope)) {
+        actionsMap[key] = this.createActionsForScopeOfHandlers(
+          currentHandlerOrScope,
+          currentPath,
+        )
+      } else {
+        throw new TypeError(
+          "createSymbiote supports only function handlers and object scopes in actions config",
+        )
       }
     })
 
@@ -96,7 +105,7 @@ class SymbioteBuilder {
 
   createReducer() {
     return (previousState = this.initialReducerState, action) => {
-      if (!action) throw new TypeError('Action should be passed')
+      if (!action) throw new TypeError("Action should be passed")
       const reducer = this.findReducerFor(action.type)
 
       if (reducer) {
@@ -111,9 +120,8 @@ class SymbioteBuilder {
     const expectedReducer = this.reducers[type]
 
     if (expectedReducer) {
-      return (state, { 'symbiote-payload': payload = [] }) => (
+      return (state, { "symbiote-payload": payload = [] }) =>
         expectedReducer(state, ...payload)
-      )
     }
 
     return this.options.defaultReducer
@@ -125,17 +133,17 @@ function createPathFor(path, ...chunks) {
 }
 
 function isHandler(handler) {
-  return typeof handler === 'function'
+  return typeof handler === "function"
 }
 
 function isScope(scope) {
-  return !Array.isArray(scope) && scope !== null && typeof scope === 'object'
+  return !Array.isArray(scope) && scope !== null && typeof scope === "object"
 }
 
 const createDefaultActionCreator = (type) => (...args) => ({
   type,
   payload: args[0],
-  'symbiote-payload': args,
+  "symbiote-payload": args,
 })
 
 function makeActionCreatorFor(type, handler) {

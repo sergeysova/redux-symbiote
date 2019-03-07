@@ -1,5 +1,6 @@
 {
-  "extends": "@atomix/eslint-config",
+  "extends": ["prettier", "@atomix/eslint-config"],
+  "plugins": ["prettier"],
   "env": {
     "browser": true
   },
