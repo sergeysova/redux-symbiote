@@ -9,9 +9,9 @@ sudo: false
 
 script:
   - npm test
-  - npm i -g dtslint
-  - rm -rf node_modules
-  - npm run types
+  # - npm i -g dtslint
+  # - rm -rf node_modules
+  # - npm run types
 
 after_success:
   - npm install
