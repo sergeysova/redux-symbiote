@@ -1,5 +1,18 @@
 const symbioteSymbols = require("symbiote-symbol")
-const nanoid = require("nanoid")
+
+if (typeof document != 'undefined') {
+  // web
+  const nanoid = require("nanoid")
+}
+else if (typeof navigator != 'undefined' && navigator.product == 'ReactNative') {
+  // react native
+  const nanoid = require("nanoid/non-secure")
+}
+else {
+  // nodejs
+  const nanoid = require("nanoid/non-secure")
+}
+
 
 module.exports = {
   createSymbiote,
