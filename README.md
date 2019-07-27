@@ -1,6 +1,10 @@
 # redux-symbiote [![Build Status](https://travis-ci.org/sergeysova/redux-symbiote.svg?branch=master)](https://travis-ci.org/atomixinteractions/redux-symbiote) [![Coverage Status](https://coveralls.io/repos/github/atomixinteractions/redux-symbiote/badge.svg?branch=master)](https://coveralls.io/github/atomixinteractions/redux-symbiote?branch=master)
 [![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors)
 
+<img src="https://raw.githubusercontent.com/RusTorg/redux-symbiote/master/assets/logo.svg?sanitize=true" width="80" />
+
+
+
 Write your actions and reducers without pain
 
 ## Usage
