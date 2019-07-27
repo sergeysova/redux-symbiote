@@ -1,5 +1,5 @@
 const symbioteSymbols = require("symbiote-symbol")
-const nanoid = require("./nanoid")
+const nanoid = require("nanoid")
 
 module.exports = {
   createSymbiote,
