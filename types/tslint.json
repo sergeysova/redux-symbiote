@@ -2,6 +2,6 @@
   "extends": "dtslint/dtslint.json",
   "rules": {
     "semicolon": [true, "always"],
-    "indent": [true, "tabs"]
+    "indent": [true, "spaces", 2]
   }
 }
