@@ -63,16 +63,14 @@ interface PlainActionCreators {
 // symbiotes with arguments
 interface ArgumentedActionCreators {
   oneArg: (one: number) => Action<[number]>;
-  twoArgs: (one: string, two: number) => Action<[string, number]>;
-  threeArgs: (one: boolean, two: number, three: string) => Action<[boolean, number, string]>;
-  manyArgs: (one: '1', two: '2', three: '3', four: '4', five: '5', six: '6') => Action<['1', '2', '3', '4'] & any[]>;
+  oneOptionalArg: (one?: number) => Action<[number | undefined]>;
+  manyArgs: (one: number, two: boolean, three: string) => Action<[number, boolean, string]>;
 }
 
 const argumentedSymbiotes = {
   oneArg: (state: PlainState, one: number) => state,
-  twoArgs: (state: PlainState, one: string, two: number) => state,
-  threeArgs: (state: PlainState, one: boolean, two: number, three: string) => state,
-  manyArgs: (state: PlainState, one: '1', two: '2', three: '3', four: '4', five: '5', six: '6') => state,
+  oneOptionalArg: (state: PlainState, one?: number) => state,
+  manyArgs: (state: PlainState, one: number, two: boolean, three: string) => state,
 };
 
 {
@@ -86,7 +84,10 @@ const argumentedSymbiotes = {
   actions as ArgumentedActionCreators;
   reducer as Reducer<PlainState>;
 
-  actions.manyArgs('1', '2', '3', '4', '5', '6');
+  actions.oneArg(1);
+  actions.oneOptionalArg();
+  actions.oneOptionalArg(1);
+  actions.manyArgs(1, true, 'str');
 }
 {
   // Throw error if an action payload has an incorrect type
@@ -96,14 +97,9 @@ const argumentedSymbiotes = {
   actions.oneArg(); // $ExpectError
   actions.oneArg('wrong'); // $ExpectError
   actions.oneArg(1, 'excess'); // $ExpectError
-  actions.twoArgs('too few'); // $ExpectError
-  actions.twoArgs(1, 'wrong'); // $ExpectError
-  actions.twoArgs('right', 1, 'excess'); // $ExpectError
-  actions.threeArgs(true, 1); // $ExpectError
-  actions.threeArgs('wrong', 'wrong', true); // $ExpectError
-  actions.threeArgs(true, 1, 'right', 'excess'); // $ExpectError
-  actions.manyArgs('1', '2', '3'); // $ExpectError
-  actions.manyArgs('wrong', 1, 1, 1, 1, 1); // $ExpectError
+  actions.manyArgs(1, true); // $ExpectError
+  actions.manyArgs('wrong', 'wrong', true); // $ExpectError
+  actions.manyArgs(1, true, 'str', 'excess'); // $ExpectError
 }
 
 // nested symbiote
