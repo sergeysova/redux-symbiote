@@ -25,8 +25,9 @@ interface PlainActionCreators {
 {
   // Works correct with plain state and actions
 
+  const initialState = { count: 0 };
   const { actions, reducer } = createSymbiote(
-    { count: 0 },
+    initialState,
     {
       inc: (state: PlainState) => ({ ...state, count: state.count + 1 }),
       dec: (state: PlainState) => ({ ...state, count: state.count + 1 }),
@@ -37,7 +38,8 @@ interface PlainActionCreators {
   reducer as Reducer<PlainState>;
 
   actions.inc();
-  actions.dec();
+  reducer(initialState, actions.dec());
+  reducer(initialState, { type: 'other' });
 }
 {
   // Throw error if the initial state type doesn't match the symbiotes state type

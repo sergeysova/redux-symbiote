@@ -14,7 +14,11 @@ export type Symbiotes<State> = {
   [Key in any]: Symbiote<State, any[]> | Symbiotes<State>;
 };
 
-export type Reducer<State> = (state: State, action: Action<any[]>) => State;
+interface BasicAction {
+  type: string | number | symbol;
+}
+
+export type Reducer<State> = (state: State, action: BasicAction) => State;
 
 export type ActionCreator<TSymbiote> = TSymbiote extends Symbiote<any, infer Arguments>
   ? (...payload: Arguments) => Action<Arguments>
