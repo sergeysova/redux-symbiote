@@ -1,5 +1,5 @@
 # redux-symbiote [![Build Status](https://travis-ci.org/sergeysova/redux-symbiote.svg?branch=master)](https://travis-ci.org/sergeysova/redux-symbiote) [![Coverage Status](https://coveralls.io/repos/github/sergeysova/redux-symbiote/badge.svg?branch=master)](https://coveralls.io/github/sergeysova/redux-symbiote?branch=master)
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors)
 
 <img src="https://raw.githubusercontent.com/sergeysova/redux-symbiote/master/assets/logo.svg?sanitize=true" width="80" />
 
@@ -324,6 +324,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
   </tr>
   <tr>
     <td align="center"><a href="https://ootm.ru/"><img src="https://avatars1.githubusercontent.com/u/1402016?v=4" width="100px;" alt="Dmitri Razin"/><br /><sub><b>Dmitri Razin</b></sub></a><br /><a href="https://github.com/sergeysova/redux-symbiote/issues?q=author%3ARusTorg" title="Bug reports">🐛</a> <a href="#design-RusTorg" title="Design">🎨</a></td>
+    <td align="center"><a href="https://github.com/Finesse"><img src="https://avatars3.githubusercontent.com/u/9006227?v=4" width="100px;" alt="Surgie Finesse"/><br /><sub><b>Surgie Finesse</b></sub></a><br /><a href="https://github.com/sergeysova/redux-symbiote/commits?author=Finesse" title="Code">💻</a></td>
   </tr>
 </table>
 
