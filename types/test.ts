@@ -1,127 +1,143 @@
-import { createSymbiote } from "redux-symbiote"
+import { Action, createSymbiote, Reducer } from "redux-symbiote";
 
 // empty
-;(() => {
+{
   // Works correct with empty types
 
-  const { actions, reducer } = createSymbiote<{}, {}>({}, {})
-  actions // $ExpectType {}
-  reducer // $ExpectType Reducer<{}>
-})()
+  const { actions, reducer } = createSymbiote({}, {});
+
+  // dtslint doesn't support duck typing so the following line emits an error
+  // actions; // $ExpectType {}
+  actions as {};
+  reducer as Reducer<{}>;
+}
 
 // plain symbiote
 interface PlainState {
-  count: number
+  count: number;
 }
 
-interface PlainActions {
-  inc: () => number
-  dec: () => number
+interface PlainActionCreators {
+  inc: () => Action;
+  dec: () => Action;
 }
 
-;(() => {
+{
   // Works correct with plain state and actions
 
-  const { actions, reducer } = createSymbiote<PlainState, PlainActions>(
-    { count: 0 },
+  const initialState = { count: 0 };
+  const { actions, reducer } = createSymbiote(
+    initialState,
     {
       inc: (state: PlainState) => ({ ...state, count: state.count + 1 }),
       dec: (state: PlainState) => ({ ...state, count: state.count + 1 }),
     },
-  )
+  );
 
-  actions // $ExpectType PlainActions
-  reducer // $ExpectType Reducer<PlainState>
-})()
-;(() => {
-  // Throw error if actions config have a incorrect type
+  actions as PlainActionCreators;
+  reducer as Reducer<PlainState>;
 
-  const symbiotes = {
-    inc: (state: PlainState) => ({ ...state, count: "hello!" }),
-    dec: (state: PlainState) => ({ ...state, count: state.count - 1 }),
-  }
-
-  createSymbiote<PlainState, PlainActions>({ count: 0 }, symbiotes) // $ExpectError
-})()
-;(() => {
-  // Throw error if initial state have a incorrect type
+  actions.inc();
+  reducer(initialState, actions.dec());
+  reducer(initialState, { type: 'other' });
+}
+{
+  // Throw error if the initial state type doesn't match the symbiotes state type
 
   const symbiotes = {
     inc: (state: PlainState) => ({ ...state, count: state.count + 1 }),
     dec: (state: PlainState) => ({ ...state, count: state.count + 1 }),
-  }
+  };
 
-  createSymbiote<PlainState, PlainActions>({ count: "hello!" }, symbiotes) // $ExpectError
-})()
+  createSymbiote({ count: "hello!" }, symbiotes); // $ExpectError
+}
+{
+  // Throw error if a symbiote return state type doesn't match the initial state type
 
-// symbiote with arguments
-interface ArgumentedActions {
-  change: (diff: number) => number
+  const symbiotes = {
+    inc: (state: PlainState) => ({ ...state, count: 'inc' }),
+    dec: (state: PlainState) => ({ ...state, count: 'dec' }),
+  };
+
+  createSymbiote({ count: 0 }, symbiotes); // $ExpectError
 }
 
-;(() => {
+// symbiotes with arguments
+interface ArgumentedActionCreators {
+  oneArg: (one: number) => Action<[number]>;
+  oneOptionalArg: (one?: number) => Action<[number | undefined]>;
+  manyArgs: (one: number, two: boolean, three: string) => Action<[number, boolean, string]>;
+}
+
+const argumentedSymbiotes = {
+  oneArg: (state: PlainState, one: number) => state,
+  oneOptionalArg: (state: PlainState, one?: number) => state,
+  manyArgs: (state: PlainState, one: number, two: boolean, three: string) => state,
+};
+
+{
   // Works correct with plain state and actions with argument
 
-  const { actions, reducer } = createSymbiote<PlainState, ArgumentedActions>(
+  const { actions, reducer } = createSymbiote(
     { count: 0 },
-    {
-      change: (state: PlainState, diff: number) => ({
-        ...state,
-        count: state.count + diff,
-      }),
-    },
-  )
+    argumentedSymbiotes,
+  );
 
-  actions // $ExpectType ArgumentedActions
-  reducer // $ExpectType Reducer<PlainState>
-})()
-;(() => {
-  // Throw error if action payload have a incorrect type
+  actions as ArgumentedActionCreators;
+  reducer as Reducer<PlainState>;
 
-  // TODO: Must throw error!
+  actions.oneArg(1);
+  actions.oneOptionalArg();
+  actions.oneOptionalArg(1);
+  actions.manyArgs(1, true, 'str');
+}
+{
+  // Throw error if an action payload has an incorrect type
 
-  const symbiote = {
-    change: (state: PlainState, diff: string) => ({
-      ...state,
-      count: state.count + parseInt(diff, 10),
-    }),
-  }
+  const { actions } = createSymbiote({ count: 0 }, argumentedSymbiotes);
 
-  createSymbiote<PlainState, ArgumentedActions>({ count: 0 }, symbiote)
-})()
+  actions.oneArg(); // $ExpectError
+  actions.oneArg('wrong'); // $ExpectError
+  actions.oneArg(1, 'excess'); // $ExpectError
+  actions.manyArgs(1, true); // $ExpectError
+  actions.manyArgs('wrong', 'wrong', true); // $ExpectError
+  actions.manyArgs(1, true, 'str', 'excess'); // $ExpectError
+}
 
 // nested symbiote
 interface NestedState {
   counter: {
     count: number
-  }
+  };
 }
 
-interface NestedActions {
+interface NestedActionCreators {
   counter: {
-    inc: () => number
-  }
+    inc: (amount: number) => Action<[number]>
+  };
 }
 
-;(() => {
+{
   // Works correct with nested state and actions
 
-  const { actions, reducer } = createSymbiote<NestedState, NestedActions>(
+  const { actions, reducer } = createSymbiote(
     { counter: { count: 0 } },
     {
       counter: {
-        inc: (state: NestedState) => ({
+        inc: (state: NestedState, amount: number) => ({
           ...state,
-          counter: { ...state.counter, count: state.counter.count + 1 },
+          counter: { ...state.counter, count: state.counter.count + amount },
         }),
       },
     },
-  )
+  );
 
-  actions // $ExpectType NestedActions
-  reducer // $ExpectType Reducer<NestedState>
-})()
-;(() => {
+  actions as NestedActionCreators;
+  reducer as Reducer<NestedState>;
+
+  actions.counter.inc(1);
+}
+{
   // Throws error if nested state have an incorrect type
 
   const symbiote = {
@@ -131,17 +147,14 @@ interface NestedActions {
         counter: { ...state.counter, count: state.counter.count + 1 },
       }),
     },
-  }
+  };
 
-  const { actions, reducer } = createSymbiote<NestedState, NestedActions>(
-    { counter: { cnt: 0 } },
-    symbiote,
-  ) // $ExpectError
+  const { actions, reducer } = createSymbiote({ counter: { cnt: 0 } }, symbiote); // $ExpectError
 
-  actions // $ExpectType NestedActions
-  reducer // $ExpectType Reducer<NestedState>
-})()
-;(() => {
+  actions as NestedActionCreators;
+  reducer as Reducer<NestedState>;
+}
+{
   // Throws error if nested action have an incorrect type
 
   const symbiote = {
@@ -151,13 +164,10 @@ interface NestedActions {
         counter: { ...state.counter, count: "newString" },
       }),
     },
-  }
+  };
 
-  const { actions, reducer } = createSymbiote<NestedState, NestedActions>(
-    { counter: { count: 0 } },
-    symbiote,
-  ) // $ExpectError
+  const { actions, reducer } = createSymbiote({ counter: { count: 0 } }, symbiote); // $ExpectError
 
-  actions // $ExpectType NestedActions
-  reducer // $ExpectType Reducer<NestedState>
-})()
+  actions as NestedActionCreators;
+  reducer as Reducer<NestedState>;
+}

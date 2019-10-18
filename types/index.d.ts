@@ -1,31 +1,47 @@
-// TypeScript Version: 2.8
+// TypeScript Version: 3.0
+
+export {};
 
 export interface NamespaceOptions<State> {
-  namespace?: string
-  defaultReducer?: (prevState: State, action: Action) => State
-  separator?: string
+  namespace?: string;
+  defaultReducer?: Reducer<State>;
+  separator?: string;
 }
 
-export type Symbiote<State> = (state: State, ...payload: any[]) => State
+export type Symbiote<State, Arguments extends any[]> = (state: State, ...payload: Arguments) => State;
 
-export type Reducer<State> = (state: State, action: Action) => State
+export type Symbiotes<State> = {
+  [Key in any]: Symbiote<State, any[]> | Symbiotes<State>;
+};
 
-export type ActionsConfig<State, Actions> = {
-  [Key in keyof Actions]: Actions[Key] extends Function // tslint:disable-line
-    ? Symbiote<State>
-    : ActionsConfig<State, Actions[Key]>
+interface BasicAction {
+  type: string | number | symbol;
 }
 
-export interface Action<Payload = any> {
-  type: string
-  payload?: Payload
+export type Reducer<State> = (state: State, action: BasicAction) => State;
+
+export type ActionCreator<TSymbiote> = TSymbiote extends Symbiote<any, infer Arguments>
+  ? (...payload: Arguments) => Action<Arguments>
+  : never;
+
+export type ActionsCreators<TSymbiotes extends Symbiotes<any>> = {
+  [Key in keyof TSymbiotes]:
+    TSymbiotes[Key] extends Symbiote<any, any[]> ? ActionCreator<TSymbiotes[Key]> :
+    TSymbiotes[Key] extends Symbiotes<any> ? ActionsCreators<TSymbiotes[Key]> :
+    never
+};
+
+export interface Action<Payload extends any[] = []> {
+  type: string;
+  payload: Payload[0];
+  "symbiote-payload": Payload;
 }
 
-export function createSymbiote<State, Actions>(
+export function createSymbiote<State, TSymbiotes extends Symbiotes<State>>(
   initialState: State,
-  actionsConfig: ActionsConfig<State, Actions>,
+  actionsConfig: TSymbiotes,
   namespaceOptions?: string | NamespaceOptions<State>,
 ): {
-  actions: Actions
+  actions: ActionsCreators<TSymbiotes>
   reducer: Reducer<State>
-}
+};
