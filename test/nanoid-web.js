@@ -1,6 +1,7 @@
 import test from "ava"
 
 global.document = {}
+global.crypto = {}
 
 const expected = require("nanoid")
 const imported = require("../src/nanoid")
